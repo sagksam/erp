@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 
-//Classe com métodos genéricos de acesso a dados
+//Classe com métodos genérico de acesso a dados
 public class GenericDAO implements Serializable {
 
     private static final long serialVersionUID = -169258812805375171L;
