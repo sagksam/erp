@@ -74,7 +74,7 @@ public class FilialBean extends BaseBean implements Serializable {
     public void setService(FilialService service) {
         this.service = service;
     }
-    
+
     @Override
     public String novo() {
 

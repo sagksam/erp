@@ -447,6 +447,39 @@ and open the template in the editor.
                     </p:panelGrid>
                 </p:fieldset>
                 <br/>
+                <p:fieldset id="panelContas" legend="Contas">
+                    <p:dataTable id="tabelaConta" value="#{contaReceberBean.getContasPedido(pedidoVendaBean.pedido.id)}" var="pedidoContas">                   
+                        <p:column headerText="Id">
+                            <h:outputText value="#{pedidoContas.id}"/>
+                        </p:column> 
+                        <p:column headerText="Vencimento">
+                            <h:outputText value="#{pedidoContas.dataVencimento}">                           
+                                <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                            </h:outputText>
+                        </p:column> 
+                        <p:column headerText="Previsto">
+                            <h:outputText value="#{pedidoContas.valorPrevisto}">
+                                <f:convertNumber currencySymbol="R$" type="currency" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Pagamento">
+                            <h:outputText value="#{pedidoContas.dataPagamento}">                           
+                                <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Pago">
+                            <h:outputText value="#{pedidoContas.valorPago}">
+                                <f:convertNumber currencySymbol="R$" type="currency" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton action="#{contaReceberBean.editarRegistro()}" icon="ui-icon-search">
+                                <f:setPropertyActionListener value="#{pedidoContas}" target="#{contaReceberBean.conta}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+                <br/>
                 <p:fieldset id='panelDadosAdicionais' legend='Dados Adicionais'>
                     <p:panelGrid columns='2' columnClasses='2'>
                         <p:outputLabel for="detalhes" value="Detalhes"/>

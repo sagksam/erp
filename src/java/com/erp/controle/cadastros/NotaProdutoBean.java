@@ -39,7 +39,7 @@ import org.primefaces.context.RequestContext;
  *
  * @author PauloHenrique
  */
-@ManagedBean
+@ManagedBean(name="notaProdutoBean")
 @SessionScoped
 public class NotaProdutoBean extends BaseBean implements Serializable{
     
@@ -51,7 +51,7 @@ public class NotaProdutoBean extends BaseBean implements Serializable{
     //Método que inicia os campos da classe
     @PostConstruct
     public void init(){
-    
+        
         this.notaProduto = new NotaProduto();
         this.notasProdutos = new ArrayList<>();
         this.notaProdutoProdutos = new NotaProdutoProdutos();

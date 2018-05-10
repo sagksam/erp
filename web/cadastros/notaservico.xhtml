@@ -415,6 +415,39 @@ and open the template in the editor.
                     </p:panelGrid>
                 </p:fieldset>
                 <br/>
+                <p:fieldset id="panelContas" legend="Contas">
+                    <p:dataTable id="tabelaConta" value="#{contaReceberBean.getContasNotaServico(notaServicoBean.notaServico.id)}" var="notaServicoContas">                   
+                        <p:column headerText="Id">
+                            <h:outputText value="#{notaServicoContas.id}"/>
+                        </p:column> 
+                        <p:column headerText="Vencimento">
+                            <h:outputText value="#{notaServicoContas.dataVencimento}">                           
+                                <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                            </h:outputText>
+                        </p:column> 
+                        <p:column headerText="Previsto">
+                            <h:outputText value="#{notaServicoContas.valorPrevisto}">
+                                <f:convertNumber currencySymbol="R$" type="currency" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Pagamento">
+                            <h:outputText value="#{notaServicoContas.dataPagamento}">                           
+                                <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Pago">
+                            <h:outputText value="#{notaServicoContas.valorPago}">
+                                <f:convertNumber currencySymbol="R$" type="currency" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton action="#{contaReceberBean.editarRegistro()}" icon="ui-icon-search">
+                                <f:setPropertyActionListener value="#{notaServicoContas}" target="#{contaReceberBean.conta}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+                <br/>
                 <p:fieldset id='panelDadosAdicionais' legend='Dados Adicionais'>
                     <p:panelGrid columns='2' columnClasses='2'>
                         <p:outputLabel for="detalhes" value="Detalhes"/>

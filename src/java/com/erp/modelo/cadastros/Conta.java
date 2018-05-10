@@ -27,6 +27,9 @@ import org.hibernate.annotations.NamedQuery;
 @NamedQueries({
     @NamedQuery(name="contasReceber", query="SELECT c FROM Conta c WHERE c.tipo = :tipo AND c.ativo = :ativo"), 
     @NamedQuery(name="contasPagar", query="SELECT c FROM Conta c WHERE c.tipo = :tipo AND c.ativo = :ativo"),
+    @NamedQuery(name="contasPedidoById", query="SELECT c FROM Conta c WHERE c.pedido > 0 AND c.pedido = :pedidoId AND c.ativo = :ativo"),
+    @NamedQuery(name="contasNotaProdutoById", query="SELECT c FROM Conta c WHERE c.notaProduto > 0 AND c.notaProduto = :notaProdutoId AND c.ativo = :ativo"),
+    @NamedQuery(name="contasNotaServicoById", query="SELECT c FROM Conta c WHERE c.notaServico > 0 AND c.notaServico = :notaServicoId AND c.ativo = :ativo"),
 })
 public class Conta extends EntidadeBase{
     

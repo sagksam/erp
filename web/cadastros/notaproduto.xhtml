@@ -50,7 +50,7 @@ and open the template in the editor.
                         <p:dialog header="Cancelar Nota" widgetVar="cancelamentoDialog" focus="motivoCancelamentoDialog">
                             <h:panelGrid columns="2" cellpadding="5">
                                 <h:outputLabel for="motivoCancelamentoDialog" value="Motivo Cancelamento:" />
-                                <p:inputText id="motivoCancelamentoDialog" value="#{notaProdutoBean.motivo}" />
+                                <p:inputText id="motivoCancelamentoDialog" value="#{notaProdutoBean.notaProduto.motivoCancelamento}" />
                                 <p:commandButton value="Cancelar" actionListener="#{notaProdutoBean.cancelarNota()}" onclick="cancelarNota();" oncomplete="cancelarNota();" update="status protocoloCancelamento dataCancelamento messages" process="@this"/>
                             </h:panelGrid>   
                         </p:dialog>
@@ -498,7 +498,40 @@ and open the template in the editor.
                         <p:outputLabel for="pesoLiquidoTransportadora" value="Peso Liquído"/>
                         <p:inputNumber id="pesoLiquidoTransportadora" value="#{notaProdutoBean.notaProduto.pesoLiquidoTransportadora}"/>                      
                     </p:panelGrid>
-                </p:fieldset> 
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelContas" legend="Contas">
+                    <p:dataTable id="tabelaNotaProdutoConta" value="#{contaReceberBean.getContasNotaProduto(notaProdutoBean.notaProduto.id)}" var="notaProdutoContas">                   
+                        <p:column headerText="Id">
+                            <h:outputText value="#{notaProdutoContas.id}"/>
+                        </p:column> 
+                        <p:column headerText="Vencimento">
+                            <h:outputText value="#{notaProdutoContas.dataVencimento}">                           
+                                <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                            </h:outputText>
+                        </p:column> 
+                        <p:column headerText="Previsto">
+                            <h:outputText value="#{notaProdutoContas.valorPrevisto}">
+                                <f:convertNumber currencySymbol="R$" type="currency" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Pagamento">
+                            <h:outputText value="#{notaProdutoContas.dataPagamento}">                           
+                                <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Pago">
+                            <h:outputText value="#{notaProdutoContas.valorPago}">
+                                <f:convertNumber currencySymbol="R$" type="currency" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton action="#{contaReceberBean.editarRegistro()}" icon="ui-icon-search">
+                                <f:setPropertyActionListener value="#{notaProdutoContas}" target="#{contaReceberBean.conta}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
                 <p:outputLabel class="auditoria" value="#{notaProdutoBean.exibirAuditoria(notaProdutoBean.notaProduto)}"/>
             </h:form>
         </div>

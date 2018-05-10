@@ -36,7 +36,7 @@ and open the template in the editor.
                         <p:growl id="messages" showDetail="true" />  
                         <p:commandButton value="Novo" action="#{contaPagarBean.novo()}" icon="ui-icon-plus" update="@all"/>  
                         <p:commandButton value="Salvar" action="#{contaPagarBean.salvar(contaPagarBean.conta)}" icon="ui-icon-disk" update="@all">
-                                         <f:actionListener binding="#{contaPagarBean.conta.setTipo('Pagar')}"/>
+                            <f:actionListener binding="#{contaPagarBean.conta.setTipo('Pagar')}"/>
                         </p:commandButton>
                         <p:commandButton value="Excluir" action="#{contaPagarBean.excluir(contaPagarBean.conta)}" icon="ui-icon-trash" update="@all">
                             <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
@@ -127,7 +127,7 @@ and open the template in the editor.
                         </p:calendar>
                         <p:outputLabel for="valorPrevisto" value="Valor Previsto"/>
                         <p:inputNumber id='valorPrevisto' value="#{contaPagarBean.conta.valorPrevisto}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
-                           <p:message for="valorPrevisto"/>
+                            <p:message for="valorPrevisto"/>
                         </p:inputNumber>
                         <p:outputLabel for="dataPagamento" value="Data Pagamento"/>
                         <p:calendar id="dataPagamento" value="#{contaPagarBean.conta.dataPagamento}" pattern="dd/MM/yyyy" mask="true"/>

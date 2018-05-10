@@ -48,7 +48,7 @@ public class ContaPagarBean extends ContaBean implements Serializable {
             manager.close();
         }
     }
-    
+
     @Override
     public String toString(){
     

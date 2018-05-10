@@ -37,7 +37,7 @@ and open the template in the editor.
                             <p:graphicImage library="imagens" name="ajaxloadingbar.gif" />
                         </p:dialog>
                         <p:commandButton value="Imprimir" actionListener="#{contaBancariaBean.imprimir(contaBancariaBean.dadosImpressao(), contaBancariaBean.dadosImpressaoProdutos(), contaBancariaBean.dadosImpressaoServicos(), contaBancariaBean.dadosImpressaoTotais(), 'Conta Bancária')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
-                          <p:fileDownload value="#{baixarArquivoView.arquivo}" />
+                            <p:fileDownload value="#{baixarArquivoView.arquivo}" />
                         </p:commandButton>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
@@ -53,7 +53,7 @@ and open the template in the editor.
                             <f:selectItems value="#{filialBean.filiais}" var="filial"
                                            itemValue="#{filial}" itemLabel="#{filial.nome}"/>
                             <p:message for="filial"/>
-                            
+
                         </p:selectOneMenu>
                         <p:outputLabel for="descricao" value="Descrição"/>
                         <p:inputText id="descricao" value="#{contaBancariaBean.contaBancaria.descricao}" size="30" required="true" requiredMessage="O campo descrição é obrigatório">

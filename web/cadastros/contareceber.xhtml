@@ -36,7 +36,7 @@ and open the template in the editor.
                         <p:growl id="messages" showDetail="true" />  
                         <p:commandButton value="Novo" action="#{contaReceberBean.novo()}" icon="ui-icon-plus" update="@all"/>  
                         <p:commandButton value="Salvar" action="#{contaReceberBean.salvar(contaReceberBean.conta)}" icon="ui-icon-disk" update="@all">
-                                         <f:actionListener binding="#{contaReceberBean.conta.setTipo('Receber')}"/>
+                            <f:actionListener binding="#{contaReceberBean.conta.setTipo('Receber')}"/>
                         </p:commandButton>
                         <p:commandButton value="Excluir" action="#{contaReceberBean.excluir(contaReceberBean.conta)}" icon="ui-icon-trash" update="@all">
                             <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
@@ -91,7 +91,7 @@ and open the template in the editor.
                         <p:outputLabel for="pedido" value="Pedido"/>
                         <p:inputText id="pedido" type="integer" value="#{contaReceberBean.conta.pedido}"/>
                         <p:outputLabel for="notaProduto" value="Nota Produto"/>
-                            <p:inputText id="notaProduto" type="integer" value="#{contaReceberBean.conta.notaProduto}"/>
+                        <p:inputText id="notaProduto" type="integer" value="#{contaReceberBean.conta.notaProduto}"/>
                         <p:outputLabel for="notaServico" value="Nota Serviço"/>
                         <p:inputText id="notaServico" type="integer" value="#{contaReceberBean.conta.notaServico}"/>
                         <p:outputLabel for="notaFiscal" value="Nota Fiscal"/>
@@ -127,7 +127,7 @@ and open the template in the editor.
                         </p:calendar>
                         <p:outputLabel for="valorPrevisto" value="Valor Previsto"/>
                         <p:inputNumber id='valorPrevisto' value="#{contaReceberBean.conta.valorPrevisto}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
-                           <p:message for="valorPrevisto"/>
+                            <p:message for="valorPrevisto"/>
                         </p:inputNumber>
                         <p:outputLabel for="dataPagamento" value="Data Pagamento"/>
                         <p:calendar id="dataPagamento" value="#{contaReceberBean.conta.dataPagamento}" pattern="dd/MM/yyyy" mask="true"/>

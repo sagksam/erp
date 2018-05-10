@@ -8,12 +8,14 @@ package com.erp.controle.cadastros;
 import com.erp.acesso.dados.GenericDAO;
 import com.erp.controle.classes.comuns.BaseBean;
 import com.erp.controle.classes.comuns.ListaBean;
+import com.erp.modelo.cadastros.Conta;
 import com.erp.modelo.cadastros.Pedido;
 import com.erp.modelo.cadastros.PedidoProdutos;
 import com.erp.modelo.cadastros.PedidoServicos;
 import com.erp.modelo.cadastros.Produto;
 import com.erp.modelo.cadastros.Servico;
 import com.erp.modelo.classes.comuns.Lista.PrazoPagamento;
+import com.erp.util.JPAUtil;
 import com.erp.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class PedidoBean extends BaseBean implements Serializable {
     private Servico servico;
     private PedidoProdutos pedidoProdutos;
     private Produto produto;
-
+     
     //Método que inicia os campos da classe
     @PostConstruct
     public void init() {
