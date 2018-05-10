@@ -33,7 +33,8 @@ public class EntidadeBase implements Serializable{
     private Auditoria auditoria;
     @Transient
     private boolean modoEdicao;
-            
+    
+    //COMENTÁRIO TESTE GIT
     public int getId() {
         return id;
     }
