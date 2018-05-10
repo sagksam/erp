@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="pt">
+    <h:head>
+        <title>Cadastro - Empresa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <div class="formPrincipal">
+            <h:outputStylesheet library="css" name="cadastro.css"/>  
+            <h:outputScript library="js" name="script.js"/> 
+            <h:form id="form">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:growl id="messages" showDetail="true" />  
+                        <p:commandButton value="Novo" action="#{empresaBean.novo()}" icon="ui-icon-plus" update="@all"/>  
+                        <p:commandButton value="Salvar" action="#{empresaBean.salvar(empresaBean.empresa)}" icon="ui-icon-disk" update="@form"/>
+                        <p:commandButton value="Excluir" action="#{empresaBean.excluir(empresaBean.empresa)}" icon="ui-icon-trash" update="@all">
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:dialog modal="true" widgetVar="statusDialog" header="Gerando Impresso..." draggable="false" closable="false" resizable="false">
+                            <p:graphicImage library="imagens" name="ajaxloadingbar.gif" />
+                        </p:dialog>
+                        <p:commandButton value="Imprimir" action="#{empresaBean.imprimir(empresaBean.dadosImpressao(), empresaBean.dadosImpressaoProdutos(), empresaBean.dadosImpressaoServicos(), empresaBean.dadosImpressaoTotais(), 'Empresa')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
+                            <p:fileDownload value="#{baixarArquivoView.arquivo}" />  
+                        </p:commandButton>                          
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:toolbar>
+                <br/>
+                <p:fieldset id="panelPrincipal" legend="Principal">
+                    <p:panelGrid columns="6" columnClasses="centered" style="margin-top:20px">
+                        <p:outputLabel for="cnpj" value="CNPJ"/>
+                        <p:inputMask mask="99.999.999/9999-99" id="cnpj" size="20" value="#{empresaBean.empresa.cnpj}" required="true" requiredMessage="O campo CNPJ é obrigatório.">
+                            <p:message for="cnpj"/>
+                        </p:inputMask>
+                        <p:outputLabel for="tipo" value="Tipo "/>
+                        <p:selectOneMenu id="tipo" value="#{empresaBean.empresa.tipo}" required="true" requiredMessage="O campo Tipo é obrigatório.">
+                            <f:selectItems value="#{listaBean.tipos}" var="tipo"
+                                           itemValue="#{tipo}" itemLabel="#{tipo.valor}"/>
+                            <p:message for="tipo"/>    
+                        </p:selectOneMenu>
+                        <p:outputLabel for="operacoes" value="Operações"/>
+                        <p:selectOneMenu id="operacoes" value="#{empresaBean.empresa.operacoes}" required="true" requiredMessage="O campo Operações é obrigatório.">
+                            <f:selectItems value="#{listaBean.operacoes}" var="operacao"
+                                           itemValue="#{operacao}" itemLabel="#{operacao.valor}" />
+                            <p:message for="operacoes"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="razaoSocial" value="Razão Social"/>
+                        <p:inputText id="razaoSocial" size="50" value="#{empresaBean.empresa.razaoSocial}" required="true" requiredMessage="O campo Razão Social é obrigatório.">
+                            <p:message for="razaoSocial"/>
+                        </p:inputText>
+                        <p:outputLabel for="nomeFantasia" value="Nome Fantasia"/>
+                        <p:inputText id="nomeFantasia" size="50" value="#{empresaBean.empresa.nomeFantasia}" required="true" requiredMessage="O campo Nome Fantasia é obrigatório.">
+                            <p:message for="nomeFantasia"/>
+                        </p:inputText>
+                        <p:outputLabel for="inscricaoEstadual" value="Inscrição Estadual"/>
+                        <p:inputMask mask="99.999.999" id="inscricaoEstadual" value="#{empresaBean.empresa.inscricaoEstadual}" required="true" requiredMessage="O campo Inscrição Estadual é obrigatório">
+                            <p:message for="inscricaoEstadual"/>
+                        </p:inputMask>
+                        <p:outputLabel for="inscricaoMunicipal" value="Inscrição Municipal"/>
+                        <p:inputText id="inscricaoMunicipal" value="#{empresaBean.empresa.inscricaoMuncipal}">
+                            <p:message for="inscricaoMunicipal"/>
+                        </p:inputText>  
+                        <p:outputLabel for="transporte" value="Transporte"/>
+                        <p:selectOneMenu id="transporte" value="#{empresaBean.empresa.transporte}" required="true" requiredMessage="O campo transporte é obrigatório">
+                            <f:selectItem itemLabel="Sim" itemValue="true"/>
+                            <f:selectItem itemLabel="Não" itemValue="false"/>
+                            <p:message for="transporte"/> 
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelEndereco" legend="Endereço">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for="cep" value="Cep "/>
+                        <p:inputMask mask="99999-999" class="cep" id="cep" value="#{empresaBean.empresa.cep}" required="true" requiredMessage="O campo Cep é obrigatório.">
+                            <p:message for="cep"/>
+                        </p:inputMask>
+                        <p:outputLabel for="endereco" value="Endereço " />
+                        <p:inputText class="endereco" id="endereco" size="60" value="#{empresaBean.empresa.endereco}" required="true" requiredMessage="O campo Endereço é obrigatório.">
+                            <p:message for="endereco"/>
+                        </p:inputText>
+                        <p:outputLabel for="numero" value="Número "/>
+                        <p:inputText id="numero" type="integer" value="#{empresaBean.empresa.numero}" required="true" requiredMessage="O campo Número é obrigatório.">
+                            <p:message for="numero"/>
+                        </p:inputText>
+                        <p:outputLabel for="complemento" value="Complemento "/>
+                        <p:inputText id="complemento" value="#{empresaBean.empresa.complemento}"/>
+                        <p:outputLabel for="bairro" value="Bairro " />
+                        <p:inputText class="bairro" id="bairro" value="#{empresaBean.empresa.bairro}" required="true" requiredMessage="O campo Bairro é obrigatório.">
+                            <p:message for="bairro"/>
+                        </p:inputText>
+                        <p:outputLabel for="cidade" value="Cidade "/>
+                        <p:inputText class="cidade" id="cidade" value="#{empresaBean.empresa.cidade}" required="true" requiredMessage="O campo Cidade é obrigatório.">
+                            <p:message for="cidade"/>
+                        </p:inputText>
+                        <p:outputLabel for="ibge" value="IBGE"/>
+                        <p:inputText class="ibge" id="ibge" value="#{empresaBean.empresa.ibge}" required="true" requiredMessage="O campo IBGE é obrigatório.">
+                            <p:message for="ibge"/>
+                        </p:inputText>
+                        <p:outputLabel for="siafi" value="SIAFI "/>
+                        <p:inputText id="siafi" value="#{empresaBean.empresa.siafi}" required="true" requiredMessage="O campo SIAFI é obrigatório.">
+                            <p:message for="siafi"/>
+                        </p:inputText>
+                        <p:outputLabel for="estado" value="Estado "/>
+                        <p:selectOneMenu widgetVar="estado" id="estado" value="#{empresaBean.empresa.estado}" required="true" requiredMessage="O campo Estado é obrigatório.">
+                            <f:selectItems value="#{listaBean.estados}" var="estado"
+                                           itemValue="#{estado}" itemLabel="#{estado.valor}" /> 
+                            <p:message for="estado"/>
+                        </p:selectOneMenu>              
+                        <p:outputLabel for="pais" value="Pais "/>
+                        <p:inputText class="pais" id="pais" value="#{empresaBean.empresa.pais}" required="true" requiredMessage="O campo País é obrigatório.">
+                            <p:message for="pais"/>
+                        </p:inputText>
+                        <p:outputLabel for="telefone" value="Telefone "/>
+                        <p:inputMask mask="99-9999-99-99" id="telefone" value="#{empresaBean.empresa.telefone}"/>
+                        <p:outputLabel for="celular" value="Celular "/>
+                        <p:inputMask mask="99-99999-99-99" id="celular" value="#{empresaBean.empresa.celular}"/>
+                        <p:outputLabel for="email" value="Email "/>
+                        <p:inputText id="email" value="#{empresaBean.empresa.email}" required="true" requiredMessage="O campo email é obrigatório." validatorMessage="Formato de email inválido.">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                            <p:message for="email"/>
+                        </p:inputText>  
+                        <p:outputLabel for="site" value="Site"/>
+                        <p:inputText id="site" value="#{empresaBean.empresa.site}"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:commandButton update=":form:empresaTelefoneDialog" oncomplete="PF('telefoneDialog').show()" icon="ui-icon-plus" title="Adicionar Telefone" action="#{empresaBean.setModoEdicao(false)}"/>
+                <p:dataTable id="tabelaTelefone" value="#{empresaBean.empresa.telefones}" var="telefone">
+                    <p:column headerText="Tipo">
+                        <h:outputText value="#{telefone.tipo}" />
+                    </p:column>
+                    <p:column headerText="Telefones">
+                        <h:outputText value="#{telefone.telefone}" />
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton actionListener="#{empresaBean.removeTelefone(telefone)}" icon="ui-icon-trash" update="tabelaTelefone"/>
+                        <p:commandButton update=":form:empresaTelefoneDialog" oncomplete="PF('telefoneDialog').show()" icon="ui-icon-search" action="#{empresaBean.setModoEdicao(true)}">
+                            <f:setPropertyActionListener value="#{telefone}" target="#{empresaBean.telefone}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:commandButton update=":form:empresaEnderecoDialog" oncomplete="PF('enderecoDialog').show(); pesquisarCep()" icon="ui-icon-plus" title="Adicionar Endereço" action="#{empresaBean.setModoEdicao(false)}"/>
+                <p:dataTable id="tabelaEndereco" value="#{empresaBean.empresa.enderecos}" var="endereco">
+                    <p:column headerText="Cep">
+                        <h:outputText value="#{endereco.cep}" />
+                    </p:column>
+                    <p:column headerText="Endereços">
+                        <h:outputText value="#{endereco.endereco}" />
+                    </p:column>
+                    <p:column headerText="Número">
+                        <h:outputText value="#{endereco.numero}" />
+                    </p:column>
+                    <p:column headerText="Complemento">
+                        <h:outputText value="#{endereco.complemento}" />
+                    </p:column>
+                    <p:column headerText="Bairro">
+                        <h:outputText value="#{endereco.bairro}" />
+                    </p:column>
+                    <p:column headerText="Cidade">
+                        <h:outputText value="#{endereco.cidade}" />
+                    </p:column>
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{endereco.estado}" />
+                    </p:column>
+                    <p:column headerText="Pais">
+                        <h:outputText value="#{endereco.pais}" />
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton action="#{empresaBean.removeEndereco(endereco)}" icon="ui-icon-trash" update="tabelaEndereco"/>
+                        <p:commandButton update=":form:empresaEnderecoDialog" oncomplete="PF('enderecoDialog').show()" icon="ui-icon-search" action="#{empresaBean.setModoEdicao(true)}">
+                            <f:setPropertyActionListener value="#{endereco}" target="#{empresaBean.endereco}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:dialog header="Telefones" widgetVar="telefoneDialog" modal="true" showEffect="explode" hideEffect="explode" resizable="false">
+                    <p:outputPanel id="empresaTelefoneDialog">
+                        <p:panelGrid columns="3">
+                            <p:outputLabel for="tipoTelefones" value="Tipo "/>
+                            <p:selectOneMenu id="tipoTelefones" value="#{empresaBean.telefone.tipo}">
+                                <f:selectItem itemLabel="Fone 2" itemValue="Fone 2"/>
+                                <f:selectItem itemLabel="Celular 2" itemValue="Celular 2"/>                        
+                            </p:selectOneMenu>
+                            <p:inputMask mask='99-9999-99-99' value="#{empresaBean.telefone.telefone}"/>  
+                            <p:commandButton value="Add" actionListener="#{empresaBean.addTelefone()}" update="@form"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+                <p:dialog class="enderecos" header="Endereços" widgetVar="enderecoDialog" modal="true" showEffect="explode" hideEffect="explode" resizable="false">
+                    <p:outputPanel id="empresaEnderecoDialog">
+                        <p:panelGrid columns="4" columnClasses="centered">
+                            <p:outputLabel for="cepEnderecos" value="Cep "/>
+                            <p:inputMask class="cepEnderecos" mask="99999-999" id="cepEnderecos" value="#{empresaBean.endereco.cep}">
+                            </p:inputMask>    
+                            <p:outputLabel for="enderecoEnderecos" value="Endereço "/>
+                            <p:inputText class="enderecoEnderecos" id="enderecoEnderecos" size="60" value="#{empresaBean.endereco.endereco}">
+                                <p:message for="enderecoEnderecos"/>
+                            </p:inputText>
+                            <p:outputLabel for="numeroEnderecos" value="Número "/>
+                            <p:inputText id="numeroEnderecos" type="integer" value="#{empresaBean.endereco.numero}">
+                                <p:message for="numeroEnderecos"/>
+                            </p:inputText>
+                            <p:outputLabel for="complementoEnderecos" value="Complemento "/>
+                            <p:inputText id="complementoEnderecos" value="#{empresaBean.endereco.complemento}"/>
+                            <p:outputLabel for="bairroEnderecos" value="Bairro "/>
+                            <p:inputText id="bairroEnderecos" value="#{empresaBean.endereco.bairro}">
+                                <p:message for="bairroEnderecos"/>
+                            </p:inputText>
+                            <p:outputLabel for="cidadeEnderecos" value="Cidade "/>
+                            <p:inputText id="cidadeEnderecos" value="#{empresaBean.endereco.cidade}">
+                                <p:message for="cidadeEnderecos"/>
+                            </p:inputText>
+                            <p:outputLabel for="estadoEnderecos" value="Estado"/>
+                            <p:selectOneMenu id="estadoEnderecos" widgetVar="widgetEstadoEnderecos" value="#{empresaBean.endereco.estado}">
+                                <f:selectItems value="#{listaBean.estados}" var="estado"
+                                               itemValue="#{estado}" itemLabel="#{estado.valor}" />  
+                                <p:message for="estadoEnderecos"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel for="paisEnderecos" value="Pais "/>
+                            <p:inputText id="paisEnderecos" value="#{empresaBean.endereco.pais}">
+                                <p:message for="paisEnderecos"/>
+                            </p:inputText>
+                            <p:commandButton value="Add" actionListener="#{empresaBean.addEndereco()}" update="@form"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+                <br/>
+                <p:fieldset id="panelDadosAdicionais" legend="Dados Adicionais">
+                    <p:panelGrid columns="2" class="centered">
+                        <p:outputLabel for="vendedor" value="Vendedor"/>
+                        <p:selectOneMenu widgetVar="vendedor" id="vendedor" value="#{empresaBean.empresa.vendedor}">
+                            <f:selectItems value="#{listaBean.vendedores}" var="vendedor"
+                                           itemValue="#{vendedor}" itemLabel="#{vendedor.valor}" /> 
+                        </p:selectOneMenu>   
+                        <p:outputLabel for="detalhes" value="Detalhes"/>
+                        <p:inputTextarea id="detalhes" rows="6" cols="33" value="#{empresaBean.empresa.detalhes}"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <p:outputLabel class="auditoria" value="#{empresaBean.exibirAuditoria(empresaBean.empresa)}"/>     
+            </h:form>
+        </div>
+    </h:body>
+</html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Empresas</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <h:form id="form-principal">
+            <f:event type="preRenderView" listener="#{empresaService.init()}" />
+            <h:outputStylesheet library="css" name="cadastro.css"/>  
+            <h:outputScript library="js" name="script.js"/>            
+            <p:toolbar>
+                    <f:facet name="left">
+                        <p:growl id="messages" showDetail="true" />  
+                        <p:commandButton value="Inserir Novo" action="#{empresaBean.novo()}" icon="ui-icon-plus" update="@all"/>                          
+                    </f:facet>
+            </p:toolbar>
+            <p:carousel value="#{empresaBean.empresas}" headerText="Empresas" var="empresa" itemStyle="text-align:center" responsive="true">
+            <h:panelGrid columns="2" columnClasses="label,value" styleClass="ui-panelgrid-blank">
+                <h:outputText value="ID:"/>
+                <h:outputText value="#{empresa.id}"/>               
+                <h:outputText value="CNPJ"/>
+                <h:outputText value="#{empresa.cnpj}"/>               
+                <h:outputText value="Razão Social:"/>
+                <h:outputText value="#{empresa.razaoSocial}"/>
+                <f:facet name="footer">
+                <p:commandButton action="#{empresaBean.editarRegistro()}" icon="ui-icon-search" styleClass="ui-button-teste">
+                    <f:param name="id" value="#{empresa.id}"/>
+                </p:commandButton>
+                </f:facet>
+            </h:panelGrid>  
+            <f:facet name="footer">
+                Foram encontrados #{empresaBean.empresas.size()} empresas.
+            </f:facet>   
+            </p:carousel>
+        </h:form>
+    </h:body>
+</html>

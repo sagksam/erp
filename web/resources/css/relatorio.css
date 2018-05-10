@@ -1,0 +1,126 @@
+html, body {height:100%;}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100%;
+  position: relative;
+  
+}
+
+.formPrincipal {
+
+    margin: 10px auto;
+    max-width: 1500px;
+    padding: 20px 12px 10px 20px;
+    font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+
+}
+
+.centered {
+    
+    border: 2px;
+    text-align: left;
+}
+
+.centered label{
+    
+    text-align: left
+}
+
+.auditoria {
+    
+    font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.toolbar {
+    
+    color: #444;
+}
+
+.ui-panel-titlebar{
+    
+    background-color: #444;
+    font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #ffffff;
+}
+
+.ui-outputlabel{
+     font: 13px 'PT Sans Narrow', sans-serif;
+}
+
+.ui-toolbar{
+    
+    background-color: #ffffff;
+    font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #444;
+    border-radius: 8px;
+    border: 2px solid #444;
+    padding: .8em;
+    margin: 2px; 
+}
+
+.ui-carousel-header{
+    
+    background-color: #ffffff;
+    font: 15px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #444;
+    border-radius: 8px;
+    border: 2px solid #444;
+}
+
+.ui-carousel-footer{
+    
+    background-color: #ffffff;
+    font: 15px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #444;
+    border-radius: 8px;
+    border: 2px solid #444;
+}
+
+.ui-carousel-item{
+    
+    background-color: #ffffff;
+    font: 18px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #444;
+    border-radius: 8px;
+    border: 2px solid #444;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    border: 1px solid #a8a8a8;
+    background: #ffffff url(/erp/javax.faces.resource/images/ui-bg_highlight-hard_80_c4c4c4_1x100.png.xhtml?ln=primefaces-aristo) 50% 50% repeat-x;
+    background: #ffffff linear-gradient(top,rgba(255,255,255,0.8),rgba(255,255,255,0));
+    background: #ffffff -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.8)),to(rgba(255,255,255,0)));
+    background: #ffffff -moz-linear-gradient(top,rgba(255,255,255,0.8),rgba(255,255,255,0));
+    color: #4f4f4f;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.ui-fieldset .ui-fieldset-legend {
+    padding: .9em 1em;
+}
+
+.ui-datatable-tablewrapper{
+    
+    background-color: #ffffff;
+    font: 18px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #444;
+    border-radius: 8px;
+    border: 2px solid #444;
+}
+
+.colored {
+    
+    background-color: #ff3333;
+}
+
+.ui-dialog-titlebar{
+    
+    background-color: #444;
+    font: 18px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #444;
+    border-radius: 8px;
+    border: 2px solid #444;
+}

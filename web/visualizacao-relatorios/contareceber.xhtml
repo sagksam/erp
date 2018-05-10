@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Contas a Receber</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <h:form id="form-principal">
+            <h:outputStylesheet library="css" name="relatorio.css"/>  
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:growl id="growl" showDetail="true" sticky="true" /> 
+                    <p:panelGrid columns="9" columnClasses="centered" layout="grid" style="font-size: 16px;">
+                        <p:outputLabel for="dataInicio" value="Data Inicio: "/>
+                        <p:calendar id="dataInicio" value="#{relatorioContaBean.dataInicio}"/>
+                        <p:outputLabel for="dataFim" value="Data Fim: "/>
+                        <p:calendar id="dataFim" value="#{relatorioContaBean.dataFim}"/>
+                        <p:outputLabel for="status" value="Status: "/>
+                        <p:selectOneMenu id="status" value="#{relatorioContaBean.status}" >
+                            <f:selectItem itemLabel="Selecione um status..." itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItems value="#{listaBean.contasStatus}" var="status"
+                                           itemValue="#{status}" itemLabel="#{status.valor}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="filial" value="Filial: "/>
+                        <p:selectOneMenu widgetVar="widgetFilialLista" id="filial" value="#{relatorioContaBean.filial}" filter="true" effect="fold" editable="false">
+                            <f:selectItems value="#{filialBean.filiais}" var="filial"
+                                           itemValue="#{filial}" itemLabel="#{filial.nome}" />
+                        </p:selectOneMenu>
+                        <p:commandButton id="buscar" value="Buscar" actionListener="#{relatorioContaBean.configurarFiltros('Receber')}" update="@all">
+                            <p:effect type="pulsate" event="click" for="buscar"></p:effect>
+                        </p:commandButton>
+                        <p:outputLabel for="exportacao" value="Exportar:"/>                        
+                        <h:commandLink id="exportacao">
+                            <p:graphicImage  library="imagens" name="pdf.png" />
+                            <p:dataExporter type="pdf" target="tbl" fileName="contasareceber" pageOnly="true" />
+                        </h:commandLink>
+                        <p:commandButton value="Concluir" type="button" onclick="PF('widgetConcluirConta').show()" />
+                        <p:dialog id="dialogConcluirConta" header="Concluir Conta" widgetVar="widgetConcluirConta" showEffect="explode" hideEffect="bounce" height="100">
+                          <p:panelGrid columns="8" columnClasses="centered" layout="grid">  
+                            <p:outputLabel for='dataPagamento' value='Pagamento: '/>
+                            <p:calendar id="dataPagamento" value="#{conversorContaBean.dataPagamento}" pattern="dd/MM/yyyy" mask="true"/>
+                            <p:outputLabel for="contaBancaria" value="Conta Bancária: "/>
+                            <p:selectOneMenu id="contaBancaria" value="#{conversorContaBean.contaBancaria}" required="true" requiredMessage="O campo Conta Bancária é obrigatório.">                              
+                                <f:selectItems value="#{contaBancariaBean.contasBancarias}" var="contaBancaria"
+                                               itemValue="#{contaBancaria}" itemLabel="#{contaBancaria.descricao}" />
+                              <p:message for="contaBancaria"/>
+                             </p:selectOneMenu><br/>
+                             <p:commandButton value="Concluir" actionListener="#{conversorContaBean.concluirConta()}" update="tbl growl dialogConcluirConta"/>
+                          </p:panelGrid>
+                        </p:dialog>
+                    </p:panelGrid>
+                </f:facet>
+            </p:toolbar>
+            <p:dataTable id="tbl" var="conta" value="#{relatorioContaBean.contasReceber}" widgetVar="contasTabela" selection="#{conversorContaBean.contasSelecionadas}" rowKey="#{conta.id}" rowStyleClass="#{conversorContaBean.isContaVencida(conta.dataVencimento, conta.dataPagamento) eq true ? 'colored' :null}"
+                         emptyMessage="Nenhuma conta foi encontrada para esse critério">
+
+                <f:facet name="#{Exporters}" >
+                    
+                    <h:commandLink>
+                        <p:graphicImage library="imagens" name="pdf.png" width="24"/>
+                        <p:dataExporter type="pdf" target="tbl" fileName="contasareceber"/>
+                    </h:commandLink>
+                </f:facet>
+
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                <p:column headerText="ID">
+                    <h:outputText value="#{conta.id}"/>
+                </p:column>
+                <p:column headerText="Data Emissão" >
+                    <h:outputText  value='#{conta.dataEmissao}'>
+                        <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Data Pagamento" >
+                    <h:outputText  value='#{conta.dataPagamento}'>
+                        <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Valor Previsto">
+                    <h:outputText value="#{conta.valorPrevisto}">
+                        <f:convertNumber currencySymbol="R$" type="currency"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Valor Pago">
+                    <h:outputText value="#{conta.valorPago}">
+                        <f:convertNumber currencySymbol="R$" type="currency"/>
+                    </h:outputText>
+                </p:column> 
+                <p:column headerText="Filial">
+                    <h:outputText value="#{conta.filial.nome}"/>
+                </p:column>
+                <p:column>
+                    <p:commandButton action="#{contaReceberBean.editarRegistro()}" icon="ui-icon-search" update="@all">
+                        <f:setPropertyActionListener value="#{conta}" target="#{contaReceberBean.conta}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

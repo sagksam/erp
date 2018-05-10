@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="pt">
+    <h:head>
+        <title>Cadastro - Produtos</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <div class="formPrincipal">
+            <h:outputStylesheet library="css" name="cadastro.css"/> 
+            <h:outputScript library="js" name="script.js"/>
+            <h:form id="form"  prependId="false">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:growl id="messages" showDetail="true" />  
+                        <p:commandButton value="Novo" action="#{produtoBean.novo()}" icon="ui-icon-plus" update="@all"/>  
+                        <p:commandButton value="Salvar" action="#{produtoBean.salvar(produtoBean.produto)}" icon="ui-icon-disk" update="@all"/>
+                        <p:commandButton value="Excluir" action="#{produtoBean.excluir(produtoBean.produto)}" icon="ui-icon-trash" update="@all">
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:dialog modal="true" widgetVar="statusDialog" header="Gerando Impresso..." draggable="false" closable="false" resizable="false">
+                            <p:graphicImage library="imagens" name="ajaxloadingbar.gif" />
+                        </p:dialog>
+                        <p:commandButton value="Imprimir" action="#{produtoBean.imprimir(produtoBean.dadosImpressao(), produtoBean.dadosImpressaoProdutos(), produtoBean.dadosImpressaoServicos(), produtoBean.dadosImpressaoTotais(), 'Produto')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
+                             <p:fileDownload value="#{baixarArquivoView.arquivo}" />                                                                                                                                                                         
+                        </p:commandButton>                          
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:toolbar> 
+                <br/>
+                <p:fieldset id="panelPrincipal" legend="Principal">
+                    <p:panelGrid columns="6" columnClasses="centered" style="margin-top:20px">
+                        <p:outputLabel for="categoria" value="Categoria"/>
+                        <p:selectOneMenu id="categoria" value="#{produtoBean.produto.categoria}" required="true" requiredMessage="O campo Categoria é obrigatório.">
+                            <f:selectItems value="#{listaBean.categorias}" var="categoria"
+                                           itemValue="#{categoria}" itemLabel="#{categoria.valor}"/>
+                            <p:message for="categoria"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="operacoes" value="Operações"/>
+                        <p:selectOneMenu id="operacoes" value="#{produtoBean.produto.operacoes}" required="true" requiredMessage="O campo Operações é obrigatório.">
+                            <f:selectItems value="#{listaBean.produtoOperacoes}" var="produtoOperacoes"
+                                           itemValue="#{produtoOperacoes}" itemLabel="#{produtoOperacoes.valor}"/>                               
+                            <p:message for="operacoes"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="referencia" value="Referência"/>
+                        <p:inputText id="referencia" value="#{produtoBean.produto.referencia}"/> 
+                        <p:outputLabel for="descricao" value="Descrição"/>
+                        <p:inputText size="50" id="descricao" value="#{produtoBean.produto.descricao}" required="true" requiredMessage="O campo Descrição é obrigatório.">
+                          <p:message for="descricao"/>
+                        </p:inputText>
+                        <p:outputLabel for="marca" value="Marca"/>
+                        <p:inputText id="marca" value="#{produtoBean.produto.marca}">
+                          <p:message for="marca"/>
+                        </p:inputText>
+                        <p:outputLabel for="modelo" value="Modelo"/>
+                        <p:inputText id="modelo" value="#{produtoBean.produto.modelo}">
+                          <p:message for="modelo"/>
+                        </p:inputText>
+                        <p:outputLabel for="status" value="Status"/>
+                        <p:selectOneMenu id="status" value="#{produtoBean.produto.status}" required="true" requiredMessage="O campo Status é obrigatório.">
+                            <f:selectItems value="#{listaBean.produtoStatus}" var="produtoStatus"                                           
+                                           itemValue="#{produtoStatus}" itemLabel="#{produtoStatus.valor}"/>
+                            <p:message for="status"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelDadosAdicionais">
+                    <p:panelGrid columns="2" columnClasses="centered">
+                        <p:outputLabel for="detalhes" value="Detalhes"/>
+                        <p:inputTextarea id="detalhes" rows="6" cols="33" value="#{produtoBean.produto.detalhes}"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelValores" legend="Valores">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for="moeda" value="Moeda"/>
+                        <p:selectOneMenu id="moeda" value="#{produtoBean.produto.moeda}" required="true" requiredMessage="O campo Moeda é obrigatório.">
+                            <f:selectItems value="#{listaBean.moeda}" var="moeda"
+                                           itemValue="#{moeda}" itemLabel="#{moeda.valor}"/>
+                            <p:message for="moeda"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="valorCusto" value="Valor Custo"/>
+                        <p:inputNumber class="valorCusto" id="valorCusto" value="#{produtoBean.produto.valorCusto}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Custo é obrigatório">
+                            <p:message for="valorCusto"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="margemLucro" value="Margem Lucro"/>
+                        <p:inputNumber class="margemLucro" id="margemLucro" value="#{produtoBean.produto.margemLucro}" symbol="%" symbolPosition="s" emptyValue="" required="true" requiredMessage="O campo Margem Lucro é obrigatório">
+                            <p:message for="margemLucro"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorVenda" value="Valor Venda"/>
+                        <p:inputNumber class="valorVenda" id="valorVenda" value="#{produtoBean.produto.valorVenda}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Venda é obrigatório">
+                            <p:message for="valorVenda"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="desconto" value="Desconto"/>
+                        <p:inputNumber class="desconto" id="desconto" value="#{produtoBean.produto.desconto}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Desconto é obrigatório">
+                            <p:message for="desconto"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorDesconto" value="Valor Desconto"/>
+                        <p:inputNumber class="valorDesconto" id="valorDesconto" value="#{produtoBean.produto.valorDesconto}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Desconto é obrigatório">
+                            <p:message for="valorDesconto"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorFinal" value="Valor Final"/>
+                        <p:inputNumber class="valorFinal" id="valorFinal" value="#{produtoBean.produto.valorFinal}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Final é obrigatório">
+                            <p:message for="valorFinal"/>
+                        </p:inputNumber>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelImpostos" legend="Impostos">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for="classFiscal" value="Class Fiscal"/>
+                        <p:selectOneMenu id="classFiscal" value="#{produtoBean.produto.classificacaoFiscal}" required="true" requiredMessage="O campo Class Fiscal é obrigatório.">
+                            <f:selectItems value="#{listaBean.classFiscal}" var="classFiscal"
+                                           itemValue="#{classFiscal}" itemLabel="#{classFiscal.valor}"/>
+                            <p:message for="classFiscal"/>
+                        </p:selectOneMenu> 
+                        <p:outputLabel for="cst" value="CST"/>
+                        <p:inputText id="cst" value="#{produtoBean.produto.cst}"/>
+                        <p:outputLabel for="ibpt" value="IBPT"/>
+                        <p:inputNumber id="ibpt" value="#{produtoBean.produto.ibpt}" symbol="%" symbolPosition="s" emptyValue="" minValue="0.00"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelEstoque" legend="Estoque">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:selectOneMenu id="controleEstoque" value="#{produtoBean.produto.controleEstoque}" required="true" requiredMessage="O campo Controle Estoque é obrigatório">
+                            <f:selectItem itemLabel="Sim" itemValue="true"/>
+                            <f:selectItem itemLabel="Não" itemValue="false"/>
+                            <p:message for="estoque"/> 
+                        </p:selectOneMenu>
+                        <p:outputLabel for="estoqueAtual" value="Estoque Atual"/>
+                        <p:inputText id="estoqueAtual" type="integer" value="#{produtoBean.produto.estoqueAtual}"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <p:outputLabel class="auditoria" value="#{produtoBean.exibirAuditoria(produtoBean.produto)}"/> 
+            </h:form>
+        </div>
+    </h:body>
+</html>

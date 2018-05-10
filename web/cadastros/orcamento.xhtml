@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="pt">
+    <h:head>
+        <title>Orçamento de Venda</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <div class="formPrincipal">
+            <h:outputStylesheet library="css" name="cadastro.css"/>  
+            <h:outputScript library="js" name="script.js"/> 
+            <h:form id="form">
+                <f:event type="preRenderView" listener="#{filialService.init()}" />
+                <f:event type="preRenderView" listener="#{empresaService.init()}" />
+                <f:event type="preRenderView" listener="#{pessoaService.init()}" />
+                <f:event type="preRenderView" listener="#{produtoService.init()}" />
+                <f:event type="preRenderView" listener="#{servicoService.init()}" />
+                <f:event type="preRenderView" listener="#{contaBancariaService.init()}" />
+                <f:event type="preRenderView" listener="#{empresaService.init()}" />
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:growl id="messages" showDetail="true" />  
+                        <p:commandButton value="Novo" action="#{orcamentoBean.novo()}" icon="ui-icon-plus" update="@all"/>  
+                        <p:commandButton value="Salvar" action="#{orcamentoBean.salvar(orcamentoBean.orcamento)}" icon="ui-icon-disk" update="@all"/>
+                        <p:commandButton value="Excluir" action="#{orcamentoBean.excluir(orcamentoBean.orcamento)}" icon="ui-icon-trash" update="@all">
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:dialog modal="true" widgetVar="statusDialog" header="Gerando Impresso..." draggable="false" closable="false" resizable="false">
+                            <p:graphicImage library="imagens" name="ajaxloadingbar.gif" />
+                        </p:dialog>
+                        <p:commandButton value="Imprimir" action="#{orcamentoBean.imprimir(orcamentoBean.dadosImpressao(), orcamentoBean.dadosImpressaoProdutos(), orcamentoBean.dadosImpressaoServicos(), orcamentoBean.dadosImpressaoTotais(), 'Orçamento de Venda')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);" icon="ui-icon-print" update="messages" ajax="false">
+                            <p:fileDownload value="#{baixarArquivoView.arquivo}" />                                                                          
+                        </p:commandButton>  
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:toolbar>
+                <br/>
+                <p:fieldset id="panelPrincipal" legend="Principal">
+                    <p:panelGrid columns="6" columnClasses="centered" style="margin-top:20px">     
+                        <p:outputLabel for="filial" value="Filial"/>
+                        <p:selectOneMenu widgetVar="widgetFilialLista" id="filial" value="#{orcamentoBean.orcamento.filial}" filter="true" effect="fold" editable="false">
+                            <f:selectItems value="#{filialBean.filiais}" var="filial"
+                                           itemValue="#{filial}" itemLabel="#{filial.nome}" />
+                            <p:message for="filial"/>
+                        </p:selectOneMenu>                    
+                        <p:outputLabel for="empresa" value="Empresa"/>
+                        <p:selectOneMenu widgetVar="widgetEmpresaLista" id="empresa" value="#{orcamentoBean.orcamento.empresa}" onchange="selecionarEmpresa()" filter="true" effect="fold" editable="false">
+                            <p:ajax listener="#{orcamentoBean.selecionarEmpresa()}" event="change" update="pessoa cep endereco numero complemento cidade bairro ibge siafi estado pais email"/>
+                            <f:selectItem itemLabel="Lista Empresas" itemValue="" />
+                            <f:selectItems value="#{empresaBean.empresasVenda}" var="empresa"
+                                           itemValue="#{empresa}" itemLabel="#{empresa.razaoSocial}" />
+                            <p:message for="empresa"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="pessoa" value="Pessoa"/>
+                        <p:selectOneMenu  widgetVar="widgetPessoaLista" id="pessoa" value="#{orcamentoBean.orcamento.pessoa}" onchange="selecionarPessoa()" filter="true" effect="fold" editable="false">
+                            <p:ajax listener="#{orcamentoBean.selecionarPessoa()}" event="change" update="empresa cep endereco numero complemento cidade bairro ibge siafi estado pais email"/>
+                            <f:selectItem itemLabel="Lista Pessoas" itemValue="" />
+                            <f:selectItems value="#{pessoaBean.pessoasVenda}" var="pessoa"
+                                           itemValue="#{pessoa}" itemLabel="#{pessoa.nomeCompleto}"/>
+                            <p:message for="pessoa"/> 
+                        </p:selectOneMenu> 
+                        <p:outputLabel for="descricao" value="Descrição"/>
+                        <p:inputText id="descricao" size="50" value="#{orcamentoBean.orcamento.descricao}" required="true" requiredMessage="O campo Descrição é obrigatório." >
+                            <p:message for="descricao"/>
+                        </p:inputText>
+                        <p:outputLabel for="dataEmissao" value="Data Emissão"/>
+                        <p:calendar id="dataEmissao" value="#{orcamentoBean.orcamento.dataEmissao}" pattern="dd/MM/yyyy" mask="true" required="true" requiredMessage="O campo Data Emissão é obrigatório.">
+                            <p:message for='dataEmissao'/>
+                        </p:calendar>
+                        <p:outputLabel for='status' value='Status'/>
+                        <p:selectOneMenu id="status" value="#{orcamentoBean.orcamento.status}" required="true" requiredMessage="O campo Status é obrigatório.">
+                            <f:selectItems value="#{listaBean.cadastroStatus}" var="status"
+                                           itemValue="#{status}" itemLabel="#{status.valor}" />
+                            <p:message for="status"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelEndereco" legend="Endereço">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for="cep" value="Cep "/>
+                        <p:inputMask mask="99999-999" class="cep" id="cep" value="#{orcamentoBean.orcamento.cep}" required="true" requiredMessage="O campo Cep é obrigatório.">
+                            <p:message for="cep"/>
+                        </p:inputMask>
+                        <p:outputLabel for="endereco" value="Endereço " />
+                        <p:inputText class="endereco" id="endereco" size="60" value="#{orcamentoBean.orcamento.endereco}" required="true" requiredMessage="O campo Endereço é obrigatório.">
+                            <p:message for="endereco"/>
+                        </p:inputText>
+                        <p:outputLabel for="numero" value="Número "/>
+                        <p:inputText id="numero" type="integer" value="#{orcamentoBean.orcamento.numero}" required="true" requiredMessage="O campo Número é obrigatório.">
+                            <p:message for="numero"/>
+                        </p:inputText>
+                        <p:outputLabel for="complemento" value="Complemento "/>
+                        <p:inputText id="complemento" value="#{orcamentoBean.orcamento.complemento}"/>
+                        <p:outputLabel for="bairro" value="Bairro " />
+                        <p:inputText class="bairro" id="bairro" value="#{orcamentoBean.orcamento.bairro}" required="true" requiredMessage="O campo Bairro é obrigatório.">
+                            <p:message for="bairro"/>
+                        </p:inputText>
+                        <p:outputLabel for="cidade" value="Cidade "/>
+                        <p:inputText class="cidade" id="cidade" value="#{orcamentoBean.orcamento.cidade}" required="true" requiredMessage="O campo Cidade é obrigatório.">
+                            <p:message for="cidade"/>
+                        </p:inputText>
+                        <p:outputLabel for="ibge" value="IBGE"/>
+                        <p:inputText class="ibge" id="ibge" value="#{orcamentoBean.orcamento.ibge}" required="true" requiredMessage="O campo IBGE é obrigatório.">
+                            <p:message for="ibge"/>
+                        </p:inputText>
+                        <p:outputLabel for="siafi" value="SIAFI "/>
+                        <p:inputText id="siafi" value="#{orcamentoBean.orcamento.siafi}" required="true" requiredMessage="O campo SIAFI é obrigatório.">
+                            <p:message for="siafi"/>
+                        </p:inputText>
+                        <p:outputLabel for="estado" value="Estado "/>
+                        <p:selectOneMenu widgetVar="estado" id="estado" value="#{orcamentoBean.orcamento.estado}" required="true" requiredMessage="O campo Estado é obrigatório.">
+                            <f:selectItems value="#{listaBean.estados}" var="estado"
+                                           itemValue="#{estado}" itemLabel="#{estado.valor}" /> 
+                            <p:message for="estado"/>
+                        </p:selectOneMenu>              
+                        <p:outputLabel for="pais" value="Pais "/>
+                        <p:inputText class="pais" id="pais" value="#{orcamentoBean.orcamento.pais}" required="true" requiredMessage="O campo País é obrigatório.">
+                            <p:message for="pais"/>
+                        </p:inputText>
+                        <p:outputLabel for="telefone" value="Telefone "/>
+                        <p:inputMask mask="99-9999-99-99" id="telefone" value="#{orcamentoBean.orcamento.telefone}"/>
+                        <p:outputLabel for="celular" value="Celular "/>
+                        <p:inputMask mask="99-99999-99-99" id="celular" value="#{orcamentoBean.orcamento.celular}"/>
+                        <p:outputLabel for="email" value="Email "/>
+                        <p:inputText id="email" value="#{orcamentoBean.orcamento.email}" required="true" requiredMessage="O campo email é obrigatório." validatorMessage="Formato de email inválido.">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                            <p:message for="email"/>
+                        </p:inputText>  
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:commandButton ajax="true" update=":form:orcamentoProdutoDialog" oncomplete="PF('produtoDialog').show(); calcularValoresProduto()" icon="ui-icon-plus" title="View"/>
+                <p:dataTable id="tabelaProduto" value="#{orcamentoBean.orcamento.orcamentosProdutos}" var="orcamentoProdutos">                   
+                    <p:column headerText="Referência">
+                        <h:outputText value="#{orcamentoProdutos.referencia}"/>
+                    </p:column>
+                    <p:column headerText="Produto">
+                        <h:outputText value="#{orcamentoProdutos.descricaoProduto}"/>
+                    </p:column>
+                    <p:column headerText="Unidade">
+                        <h:outputText value="#{orcamentoProdutos.unidade}"/>
+                    </p:column>
+                    <p:column headerText="Quantidade">
+                        <h:outputText value="#{orcamentoProdutos.quantidade}"/>
+                    </p:column>
+                    <p:column headerText="Valor Unitário">
+                        <h:outputText value="#{orcamentoProdutos.valorUnitario}"/>
+                    </p:column>
+                    <p:column headerText="Valor Unitário">
+                        <h:outputText value="#{orcamentoProdutos.valorUnitario}"/>
+                    </p:column>
+                    <p:column headerText="Valor Total">
+                        <h:outputText value="#{orcamentoProdutos.valorTotal}"/>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton actionListener="#{orcamentoBean.removeProduto(orcamentoProdutos)}" icon="ui-icon-trash" update="tabelaProduto @form"/>
+                        <p:commandButton update=":form:orcamentoProdutoDialog" oncomplete="PF('produtoDialog').show();calcularValoresProduto()" icon="ui-icon-search"  action="#{orcamentoBean.setModoEdicao(true)}">
+                            <f:setPropertyActionListener value="#{orcamentoProdutos}" target="#{orcamentoBean.orcamentoProdutos}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:dialog header="Produtos" widgetVar="produtoDialog" modal="true" showEffect="explode" hideEffect="explode" resizable="false">
+                    <p:outputPanel id="orcamentoProdutoDialog">
+                        <p:panelGrid columns="8">
+                            <p:outputLabel for="produtoItem" value="Produto"/>
+                            <p:selectOneMenu id="produtoItem" value="#{orcamentoBean.produto}" filter="true" filterMatchMode="startsWith">
+                                <f:selectItem itemValue="" itemLabel="Lista Produto"/>
+                                <f:selectItems value="#{produtoBean.produtosVenda}" var="produto"
+                                               itemValue="#{produto}" itemLabel="#{produto.descricao}" /> 
+                                <p:ajax listener="#{orcamentoBean.selecionarProduto()}" event="change" update="referenciaProduto"/>
+                                <p:message for="produtoItem"/>
+                            </p:selectOneMenu>   
+                            <p:outputLabel for="referenciaProduto" value="Referência"/>
+                            <p:inputText id="referenciaProduto" value="#{orcamentoBean.orcamentoProdutos.referencia}">                       
+                                <p:message for="referenciaProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="unidadeProduto" value="Unidade"/>
+                            <p:inputText id="unidadeProduto" value="#{orcamentoBean.orcamentoProdutos.unidade}">                       
+                                <p:message for="unidadeProduto"/>
+                            </p:inputText>                        
+                            <p:outputLabel for="estoqueAtualProduto" value="Estoque Atual"/>
+                            <p:inputText id="estoqueAtualProduto" type="integer" value="#{orcamentoBean.orcamentoProdutos.estoqueAtual}" required="true" requiredMessage="O campo Estoque atual é obrigatório.">                       
+                                <p:message for="estoqueAtualProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="quantidadeProduto" value="Quantidade"/>
+                            <p:inputText id="quantidadeProduto" type="integer" value="#{orcamentoBean.orcamentoProdutos.quantidade}" required="true" requiredMessage="O campo Quantidade é obrigatório.">                       
+                                <p:message for="quantidadeProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="valorUnitarioProduto" value="Valor Unitário"/>
+                            <p:inputNumber id="valorUnitarioProduto" value="#{orcamentoBean.orcamentoProdutos.valorUnitario}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Unitário é obrigatório">
+                                <p:message for="valorUnitarioProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorProdutoProduto" value="Valor Produto"/>
+                            <p:inputNumber id="valorProdutoProduto" value="#{orcamentoBean.orcamentoProdutos.valorProduto}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Produto é obrigatório">
+                                <p:message for="valorProdutoProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="descontoProduto" value="Desconto"/>
+                            <p:inputNumber id="descontoProduto" value="#{orcamentoBean.orcamentoProdutos.desconto}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Desconto é obrigatório">
+                                <p:message for="descontoProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorDescontoProduto" value="Valor Desconto"/>
+                            <p:inputNumber id='valorDescontoProduto' value="#{orcamentoBean.orcamentoProdutos.valorDesconto}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Desconto é obrigatório">
+                                <p:message for="valorDescontoProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="margemIPIProduto" value="Margem IPI"/>
+                            <p:inputNumber id="margemIPIProduto" value="#{orcamentoBean.orcamentoProdutos.margemIPI}" symbol="%" symbolPosition="s" emptyValue="" minValue="0.00"   required="true" requiredMessage="O campo Margem IPI é obrigatório">
+                                <p:message for="margemIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="baseIPIProduto" value="Base IPI"/>
+                            <p:inputNumber id='baseIPIProduto' value="#{orcamentoBean.orcamentoProdutos.baseIPI}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Base IPI é obrigatório">
+                                <p:message for="baseIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="aliquotaIPIProduto" value="Alíquota IPI"/>
+                            <p:inputNumber id="aliquotaIPIProduto" value="#{orcamentoBean.orcamentoProdutos.aliquotaIPI}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Alíquota IPI é obrigatório">
+                                <p:message for="aliquotaIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorIPIProduto" value="Valor IPI"/>
+                            <p:inputNumber id='valorIPIProduto' value="#{orcamentoBean.orcamentoProdutos.valorIPI}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor IPI é obrigatório">
+                                <p:message for="valorIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="margemICMSProduto" value="Margem ICMS"/>
+                            <p:inputNumber id="margemICMSProduto" value="#{orcamentoBean.orcamentoProdutos.margemICMS}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Margem ICMS é obrigatório">
+                                <p:message for="margemICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="baseICMSProduto" value="Base ICMS"/>
+                            <p:inputNumber id='baseICMSProduto' value="#{orcamentoBean.orcamentoProdutos.baseICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMS é obrigatório">
+                                <p:message for="baseICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="aliquotaICMSProduto" value="Alíquota ICMS"/>
+                            <p:inputNumber id="aliquotaICMSProduto" value="#{orcamentoBean.orcamentoProdutos.aliquotaICMS}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Alíquota ICMS é obrigatório">
+                                <p:message for="aliquotaICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorICMSProduto" value="Valor ICMS"/>
+                            <p:inputNumber id='valorICMSProduto' value="#{orcamentoBean.orcamentoProdutos.valorICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMS é obrigatório">
+                                <p:message for="valorICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="margemICMSSTProduto" value="Margem ICMSST"/>
+                            <p:inputNumber id="margemICMSSTProduto" value="#{orcamentoBean.orcamentoProdutos.margemICMSST}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Margem ICMSST é obrigatório">
+                                <p:message for="margemICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="baseICMSSTProduto" value="Base ICMSST"/>
+                            <p:inputNumber id='baseICMSSTProduto' value="#{orcamentoBean.orcamentoProdutos.baseICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMSST é obrigatório">
+                                <p:message for="baseICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="aliquotaICMSSTProduto" value="Alíquota ICMSST"/>
+                            <p:inputNumber id="aliquotaICMSSTProduto" value="#{orcamentoBean.orcamentoProdutos.aliquotaICMSST}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Alíquota ICMSST é obrigatório">
+                                <p:message for="aliquotaICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorICMSSTProduto" value="Valor ICMSST"/>
+                            <p:inputNumber id='valorICMSSTProduto' value="#{orcamentoBean.orcamentoProdutos.valorICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMSST é obrigatório">
+                                <p:message for="valorICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorFreteProduto" value="Valor Frete"/>
+                            <p:inputNumber id='valorFreteProduto' value="#{orcamentoBean.orcamentoProdutos.valorFrete}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Frete é obrigatório">
+                                <p:message for="valorFreteProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorSeguroProduto" value="Valor Seguro"/>
+                            <p:inputNumber id='valorSeguroProduto' value="#{orcamentoBean.orcamentoProdutos.valorSeguro}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Seguro é obrigatório">
+                                <p:message for="valorSeguroProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="outrasDespesasProduto" value="Outras Despesas"/>
+                            <p:inputNumber id='outrasDespesasProduto' value="#{orcamentoBean.orcamentoProdutos.outrasDespesas}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Outras Despesas é obrigatório">
+                                <p:message for="outrasDespesasProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorTotalProduto" value="Valor Total"/>
+                            <p:inputNumber id='valorTotalProduto' value="#{orcamentoBean.orcamentoProdutos.valorTotal}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
+                                <p:message for="valorTotalProduto"/>
+                            </p:inputNumber>
+                            <p:commandButton value="Add" actionListener="#{orcamentoBean.addProduto()}" update="@form" oncomplete="calcularValoresProduto()"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+                <p:commandButton ajax="true" update=":form:orcamentoServicoDialog" oncomplete="PF('servicoDialog').show(); calcularValoresServico()" icon="ui-icon-plus" title="View"/>
+                <p:dataTable id="tabelaServico" value="#{orcamentoBean.orcamento.orcamentosServicos}" var="orcamentoServicos">                   
+                    <p:column headerText="Serviço">
+                        <h:outputText value='#{orcamentoServicos.descricaoServico}'/>
+                    </p:column>
+                    <p:column headerText="Unidade">
+                        <h:outputText value="#{orcamentoServicos.unidade}"/>
+                    </p:column>
+                    <p:column headerText="Quantidade">
+                        <h:outputText value='#{orcamentoServicos.quantidade}'/>
+                    </p:column>
+                    <p:column headerText="Valor Unitário">
+                        <h:outputText value='#{orcamentoServicos.valorUnitario}'/>
+                    </p:column>
+                    <p:column headerText="Valor Serviço">
+                        <h:outputText value='#{orcamentoServicos.valorServico}'/>
+                    </p:column>
+                    <p:column headerText="Desconto">
+                        <h:outputText value='#{orcamentoServicos.desconto}'/>
+                    </p:column>
+                    <p:column headerText="Valor Desconto">
+                        <h:outputText value='#{orcamentoServicos.valorDesconto}'/>
+                    </p:column>
+                    <p:column headerText="Valor Total">
+                        <h:outputText value='#{orcamentoServicos.valorTotal}'/>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton actionListener="#{orcamentoBean.removeServico(orcamentoServicos)}" icon="ui-icon-trash" update="tabelaServico @form"/>
+                        <p:commandButton update=":form:orcamentoServicoDialog" oncomplete="PF('servicoDialog').show(); calcularValoresServico()" icon="ui-icon-search"  action="#{orcamentoBean.setModoEdicao(true)}">
+                            <f:setPropertyActionListener value="#{orcamentoServicos}" target="#{orcamentoBean.orcamentoServicos}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:dialog header="Servicos" widgetVar="servicoDialog" modal="true" showEffect="explode" hideEffect="explode" resizable="false">
+                    <p:outputPanel id="orcamentoServicoDialog">
+                        <p:panelGrid columns="4">
+                            <p:outputLabel for="servicoItem" value="Serviço"/>
+                            <p:selectOneMenu id="servicoItem" value="#{orcamentoBean.servico}">
+                                <f:selectItem itemValue="" itemLabel="Lista Serviço"/>
+                                <f:selectItems value="#{servicoBean.servicosVenda}" var="servico"
+                                               itemValue="#{servico}" itemLabel="#{servico.descricao}" />  
+                                <p:ajax listener="#{orcamentoBean.selecionarServico()}" event="change" update="unidadeServico"/>
+                                <p:message for="servicoItem"/>
+                            </p:selectOneMenu>  
+                            <p:outputLabel for='unidadeServico' value='Unidade'/>
+                            <p:inputText id='unidadeServico' value="#{orcamentoBean.orcamentoServicos.unidade}" >
+                                <p:message for='unidadeServico'/>
+                            </p:inputText>
+                            <p:outputLabel for="quantidadeServico" value="Quantidade "/>
+                            <p:inputText id="quantidadeServico" type="integer" value="#{orcamentoBean.orcamentoServicos.quantidade}" required="true" requiredMessage="O campo Quantidade é obrigatório.">
+                                <p:message for="quantidadeServico"/>
+                            </p:inputText>
+                            <p:outputLabel for="valorUnitarioServico" value="Valor Unitário"/>
+                            <p:inputNumber id="valorUnitarioServico" value="#{orcamentoBean.orcamentoServicos.valorUnitario}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Unitário é obrigatório">
+                                <p:message for="valorUnitarioServico"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorServicoServico" value="Valor Serviço"/>
+                            <p:inputNumber id="valorServicoServico" value="#{orcamentoBean.orcamentoServicos.valorServico}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Serviço é obrigatório">
+                                <p:message for="valorServicoServico"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="descontoServico" value="Desconto"/>
+                            <p:inputNumber id="descontoServico" value="#{orcamentoBean.orcamentoServicos.desconto}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Desconto é obrigatório">
+                                <p:message for="descontoServico"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorDescontoServico" value="Valor Desconto"/>
+                            <p:inputNumber id='valorDescontoServico' value="#{orcamentoBean.orcamentoServicos.valorDesconto}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Desconto é obrigatório">
+                                <p:message for="valorDescontoServico"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorTotalServico" value="Valor Total"/>
+                            <p:inputNumber id="valorTotalServico" value="#{orcamentoBean.orcamentoServicos.valorTotal}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Total é obrigatório">
+                                <p:message for="valorTotalServico"/>
+                            </p:inputNumber>
+                            <p:commandButton value="Add" actionListener="#{orcamentoBean.addServico()}" update="@form" oncomplete="calcularValoresServico();"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+                <br/>
+                <p:fieldset id='panelValores' legend="Valores">
+                    <p:panelGrid columns='6' columnClasses='centered'>
+                        <p:outputLabel for="valorProdutos" value="Valor Produtos"/>
+                        <p:inputNumber class="valorProdutos" id="valorProdutos" value="#{orcamentoBean.orcamento.valorProdutos}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Produtos é obrigatório">
+                            <p:message for="valorServicos"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorServicos" value="Valor Serviços"/>
+                        <p:inputNumber class="valorServicos" id="valorServicos" value="#{orcamentoBean.orcamento.valorServicos}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Serviços é obrigatório">
+                            <p:message for="valorServicos"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorDesconto" value="Valor Desconto"/>
+                        <p:inputNumber class="valorDesconto" id="valorDesconto" value="#{orcamentoBean.orcamento.valorDesconto}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Desconto é obrigatório">
+                            <p:message for="valorDesconto"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="baseIPI" value="Base IPI"/>
+                        <p:inputNumber class="baseIPI" id="baseIPI" value="#{orcamentoBean.orcamento.baseIPI}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base IPI é obrigatório">
+                            <p:message for="baseIPI"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="
+                                       valorIPI" value="Valor IPI"/>
+                        <p:inputNumber class="valorIPI" id="valorIPI" value="#{orcamentoBean.orcamento.valorIPI}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor IPI é obrigatório">
+                            <p:message for="valorIPI"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="baseICMS" value="Base ICMS"/>
+                        <p:inputNumber class="baseICMS" id="baseICMS" value="#{orcamentoBean.orcamento.baseICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMS é obrigatório">
+                            <p:message for="baseICMS"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorICMS" value="Valor ICMS"/>
+                        <p:inputNumber class="valorICMS" id="valorICMS" value="#{orcamentoBean.orcamento.valorICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMS é obrigatório">
+                            <p:message for="valorICMS"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="baseICMSST" value="Base ICMSST"/>
+                        <p:inputNumber class="baseICMSST" id="baseICMSST" value="#{orcamentoBean.orcamento.baseICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMSST é obrigatório">
+                            <p:message for="baseICMSST"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorICMSST" value="Valor ICMSST"/>
+                        <p:inputNumber class="valorICMSST" id="valorICMSST" value="#{orcamentoBean.orcamento.valorICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMSST é obrigatório">
+                            <p:message for="valorICMSST"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorSeguro" value="Valor Seguro"/>
+                        <p:inputNumber class="valorSeguro" id="valorSeguro" value="#{orcamentoBean.orcamento.valorSeguro}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Seguro é obrigatório">
+                            <p:message for="valorSeguro"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorFrete" value="Valor Frete"/>
+                        <p:inputNumber class="valorFrete" id="valorFrete" value="#{orcamentoBean.orcamento.valorFrete}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Frete é obrigatório">
+                            <p:message for="valorFrete"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="prazoPagamento" value="Prazo Pagamento"/>
+                        <p:selectOneMenu widgetVar="prazoPagamento" id="prazoPagamento" value="#{orcamentoBean.orcamento.prazoPagamento}" required="true" requiredMessage="O campo Prazo de Pagamento é obrigatório." >
+                            <f:selectItems value="#{listaBean.prazoPagamento}" var="prazoPagamento"
+                                           itemValue="#{prazoPagamento}" itemLabel="#{prazoPagamento.valor}"/> 
+                            <p:ajax listener="#{orcamentoBean.selecionarParcelas()}" update="parcelas valorParcela"/> 
+                            <p:message for="prazoPagamento"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="parcelas" value="Parcelas "/>
+                        <p:inputText id="parcelas" type="integer" value="#{orcamentoBean.orcamento.parcelas}" required="true" requiredMessage="O campo Parcelas é obrigatório.">
+                            <p:message for="parcelas"/>
+                        </p:inputText>
+                        <p:outputLabel for="valorParcela" value="Valor Parcela"/>
+                        <p:inputNumber class="valorParcela" id="valorParcela" value="#{orcamentoBean.orcamento.valorParcela}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Parcela é obrigatório">
+                            <p:message for="valorParcela"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorTotal" value="Valor Total"/>
+                        <p:inputNumber class="valorTotal" id="valorTotal" value="#{orcamentoBean.orcamento.valorTotal}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
+                            <p:message for="valorTotal"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="contaBancaria" value="Conta Bancária"/>
+                        <p:selectOneMenu widgetVar="contaBancaria" id="contaBancaria" value="#{orcamentoBean.orcamento.contaBancaria}" required="true" requiredMessage="O campo Conta Bancária é obrigatório.">
+                            <f:selectItems value="#{contaBancariaBean.contasBancarias}" var="contaBancaria"
+                                           itemValue="#{contaBancaria}" itemLabel="#{contaBancaria.descricao}" /> 
+                            <p:message for="contaBancaria"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="formaPagamento" value="Forma Pagamento"/>
+                        <p:selectOneMenu widgetVar="formaPagamento" id="formaPagamento" value="#{orcamentoBean.orcamento.formaPagamento}" required="true" requiredMessage="O campo Forma de Pagamento é obrigatório.">
+                            <f:selectItems value="#{listaBean.formaPagamento}" var="formaPagamento"
+                                           itemValue="#{formaPagamento}" itemLabel="#{formaPagamento.valor}" /> 
+                            <p:message for="formaPagamento"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id='panelDadosAdicionais' legend='Dados Adicionais'>
+                    <p:panelGrid columns='2' columnClasses='2'>
+                        <p:outputLabel for="detalhes" value="Detalhes"/>
+                        <p:inputTextarea id="detalhes" rows="6" cols="33" value="#{orcamentoBean.orcamento.detalhes}"/>                  
+                    </p:panelGrid>
+                </p:fieldset>
+                <p:outputLabel class="auditoria" value="#{orcamentoBean.exibirAuditoria(orcamentoBean.orcamento)}"/>
+            </h:form>
+        </div>
+    </h:body>
+</html>

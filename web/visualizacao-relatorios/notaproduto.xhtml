@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Notas de Produto</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <h:form id="form-principal">
+            <h:outputStylesheet library="css" name="relatorio.css"/>  
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:growl id="growl" showDetail="true" sticky="true" /> 
+                    <p:panelGrid columns="9" columnClasses="centered" layout="grid" style="font-size: 16px;">
+                        <p:outputLabel for="dataInicio" value="Data Inicio: "/>
+                        <p:calendar id="dataInicio" value="#{relatorioNotaProdutoBean.dataInicio}"/>
+                        <p:outputLabel for="dataFim" value="Data Fim: "/>
+                        <p:calendar id="dataFim" value="#{relatorioNotaProdutoBean.dataFim}"/>
+                        <p:outputLabel for="status" value="Status: "/>
+                        <p:selectOneMenu id="status" value="#{relatorioNotaProdutoBean.status}" >
+                            <f:selectItem itemLabel="Selecione um status..." itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItems value="#{listaBean.notasProdutosStatus}" var="status"
+                                           itemValue="#{status}" itemLabel="#{status.valor}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="descricao" value="Cliente: "/>
+                        <p:inputText id="descricao" value="#{relatorioNotaProdutoBean.descricao}" maxlength="60" />
+                        <p:commandButton value="Buscar" action="#{relatorioNotaProdutoBean.configurarFiltros()}" update="tbl growl"/>
+                        <p:outputLabel for="exportacao" value="Exportar:"/>                   
+                        <h:commandLink id="exportacao">
+                            <p:graphicImage  library="imagens" name="pdf.png" />
+                            <p:dataExporter type="pdf" target="tbl" fileName="notasprodutos" pageOnly="true" />
+                        </h:commandLink>
+                    </p:panelGrid>
+                </f:facet>
+            </p:toolbar>
+            <p:dataTable id="tbl" var="notaProduto" value="#{relatorioNotaProdutoBean.notasProdutos}" widgetVar="notasProdutosTabela" selection="#{relatorioNotaProdutoBean.notasProdutos}" rowKey="#{notaProduto.id}"
+                         emptyMessage="Nenhuma nota foi encontrada para esse critério">
+
+                <f:facet name="#{Exporters}" >
+                    <h:commandLink>
+                        <p:graphicImage library="imagens" name="pdf.png" width="24"/>
+                        <p:dataExporter type="pdf" target="tbl" fileName="notasproduto"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                <p:column headerText="ID">
+                    <h:outputText value="#{notaProduto.id}"/>
+                </p:column>  
+                <p:column headerText="ID">
+                    <h:outputText value="#{notaProduto.notaFiscal}"/>
+                </p:column> 
+                <p:column headerText="Data Emissão">
+                    <h:outputText value="#{notaProduto.dataEmissao}">
+                        <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                    </h:outputText>
+                </p:column> 
+                <p:column headerText="Status">
+                    <h:outputText value="#{listaBean.getNotasProdutosStatus(notaProduto.status)}"/>
+                </p:column>
+                <p:column headerText="Cliente">
+                    <h:outputText value="#{notaProduto.descricao}"/>
+                </p:column>
+                <p:column headerText="Valor Total">
+                    <h:outputText value="#{notaProduto.valorTotal}">
+                        <f:convertNumber currencySymbol="R$" type="currency"/>
+                    </h:outputText>
+                </p:column>
+                <p:column>
+                    <p:commandButton action="#{notaProdutoBean.editarRegistro()}" icon="ui-icon-search" update="@all">
+                        <f:setPropertyActionListener value="#{notaProduto}" target="#{notaProdutoBean.notaProduto}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

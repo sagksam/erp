@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="pt">
+    <h:head>
+        <title>Cadastros - Notas Produto</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <div class="formPrincipal">
+            <h:outputStylesheet library="css" name="cadastro.css"/>  
+            <h:outputScript library="js" name="script.js"/> 
+            <h:form id="form">
+                <f:event type="preRenderView" listener="#{filialService.init()}" />
+                <f:event type="preRenderView" listener="#{empresaService.init()}" />
+                <f:event type="preRenderView" listener="#{pessoaService.init()}" />
+                <f:event type="preRenderView" listener="#{produtoService.init()}" />
+                <f:event type="preRenderView" listener="#{servicoService.init()}" />
+                <f:event type="preRenderView" listener="#{contaBancariaService.init()}" />
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:growl id="messages" showDetail="true"/>  
+                        <p:commandButton value="Novo" action="#{notaProdutoBean.novo()}" icon="ui-icon-plus" update="@all"/>  
+                        <p:commandButton value="Salvar" action="#{notaProdutoBean.salvar(notaProdutoBean.notaProduto)}" icon="ui-icon-disk" update="@all"/>
+                        <p:commandButton value="Excluir" action="#{notaProdutoBean.excluir(notaProdutoBean.notaProduto)}" icon="ui-icon-trash" update="@all">
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:dialog modal="true" widgetVar="statusDialog" header="Gerando Impresso..." draggable="false" closable="false" resizable="false">
+                            <p:graphicImage library="imagens" name="ajaxloadingbar.gif" />
+                        </p:dialog>
+                        <p:commandButton value="Imprimir" action="#{notaProdutoBean.imprimir(notaProdutoBean.dadosImpressao(), notaProdutoBean.dadosImpressaoProdutos(), notaProdutoBean.dadosImpressaoServicos(), notaProdutoBean.dadosImpressaoTotais(), 'Notas de Produto')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
+                            <p:fileDownload value="#{baixarArquivoView.arquivo}" />                          
+                        </p:commandButton>
+                        <p:commandButton value="Solicitar Nota" action="#{notaProdutoBean.solicitarNota()}" icon="ui-icon-clipboard" update="status chaveAcesso protocoloAutorizacao dataAutorizacao messages"/>
+                        <p:commandButton value="Cancelar Nota" onclick="PF('cancelamentoDialog').show();" icon="ui-icon-clipboard"/>
+                        <p:dialog header="Cancelar Nota" widgetVar="cancelamentoDialog" focus="motivoCancelamentoDialog">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <h:outputLabel for="motivoCancelamentoDialog" value="Motivo Cancelamento:" />
+                                <p:inputText id="motivoCancelamentoDialog" value="#{notaProdutoBean.motivo}" />
+                                <p:commandButton value="Cancelar" actionListener="#{notaProdutoBean.cancelarNota()}" onclick="cancelarNota();" oncomplete="cancelarNota();" update="status protocoloCancelamento dataCancelamento messages" process="@this"/>
+                            </h:panelGrid>   
+                        </p:dialog>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:toolbar>
+                <br/>
+                <p:fieldset id="panelPrincipal" legend="Principal">
+                    <p:panelGrid columns="6" columnClasses="centered" style="margin-top:20px">     
+                        <p:outputLabel for="filial" value="Filial"/>
+                        <p:selectOneMenu widgetVar="widgetFilialLista" id="filial" value="#{notaProdutoBean.notaProduto.filial}" filter="true" effect="fold" editable="false">
+                            <p:ajax listener="#{notaProdutoBean.selecionarAliquotasFiliais()}" event="change" update="notaFiscal creditoICMS "/>
+                            <f:selectItem itemValue="" itemLabel="Lista Filiais"/>
+                            <f:selectItems value="#{filialBean.filiais}" var="filial"
+                                           itemValue="#{filial}" itemLabel="#{filial.nome}" />
+                            <p:message for="filial"/>
+                        </p:selectOneMenu>     
+                        <p:outputLabel for="notaFiscal" value="Nota Fiscal"/>
+                        <p:inputText id="notaFiscal" value="#{notaProdutoBean.notaProduto.notaFiscal}" type="integer" required="true" requiredMessage="O campo Nota Fiscal é obrigatório."/>
+                        <p:outputLabel for="tipo" value="Tipo"/>
+                        <p:selectOneMenu id="tipo" value="#{notaProdutoBean.notaProduto.tipo}">                        
+                            <f:selectItem itemValue="SAIDA" itemLabel="Saída"/>
+                            <f:selectItem itemValue="ENTRADA" itemLabel="Entrada"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="naturezaOperacao" value="Natureza Operação"/>
+                        <p:inputText id="naturezaOperacao" size="50" value="#{notaProdutoBean.notaProduto.naturezaOperacao}" required="true" requiredMessage="O campo Natureza Operação é obrigatório.">
+                            <p:message for="naturezaOperacao"/>
+                        </p:inputText>
+                        <p:outputLabel for="dataEmissao" value="Data Emissão"/>
+                        <p:calendar id="dataEmissao" value="#{notaProdutoBean.notaProduto.dataEmissao}" pattern="dd/MM/yyyy" mask="true" required="true" requiredMessage="O campo Data Emissão é obrigatório.">
+                            <p:message for='dataEmissao'/>
+                        </p:calendar>
+                        <p:outputLabel for="dataSaidaEntrada" value="Data Saída Entrada"/>
+                        <p:calendar id="dataSaidaEntrada" value="#{notaProdutoBean.notaProduto.dataSaidaEntrada}" pattern="dd/MM/yyyy" mask="true" required="true" requiredMessage="O campo Data Saída Entrada é obrigatório.">
+                            <p:message for='dataSaidaEntrada'/>
+                        </p:calendar>
+                        <p:outputLabel for="horaEmissao" value="Hora Emissão"/>
+                        <p:calendar id="horaEmissao" value="#{notaProdutoBean.notaProduto.horaEmissao}" pattern="dd/MM/yyyy HH:mm:ss" mask="true">
+                            <p:message for='horaEmissao'/>
+                        </p:calendar> 
+                        <p:outputLabel for="finalidade" value="Finalidade"/>
+                        <p:selectOneMenu id="finalidade" value="#{notaProdutoBean.notaProduto.finalidade}">                        
+                            <f:selectItem itemValue="NORMAL" itemLabel="Normal"/>
+                            <f:selectItem itemValue="COMPLEMENTAR" itemLabel="Complementar"/>
+                            <f:selectItem itemValue="DEVOLUCAO" itemLabel="Devolução"/>
+                        </p:selectOneMenu>
+                   </p:panelGrid>
+                </p:fieldset> 
+                <br/>
+                <p:fieldset id='panelNotaFiscal' legend="NotaFiscal" >
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for='status' value='Status'/>
+                        <p:inputText id="status" value="#{notaProdutoBean.notaProduto.status}" required="true" requiredMessage="O campo Status é obrigatório">              
+                            <p:message for="status"/>
+                        </p:inputText>
+                        <p:outputLabel for="chaveAcesso" value="Chave de Acesso"/>
+                        <p:inputText id="chaveAcesso" size="50" value="#{notaProdutoBean.notaProduto.chaveAcesso}">
+                            <p:message for="chaveAcesso"/>
+                        </p:inputText>
+                        <p:outputLabel for="protocoloAutorizacao" value="Protocolo Autorização"/>
+                        <p:inputText id="protocoloAutorizacao" size="25" value="#{notaProdutoBean.notaProduto.protocoloAutorizacao}">
+                            <p:message for="protocoloAutorizacao"/>
+                        </p:inputText>
+                        <p:outputLabel for="dataAutorizacao" value="Data Autorização"/>
+                        <p:calendar id="dataAutorizacao" value="#{notaProdutoBean.notaProduto.dataAutorizacao}" pattern="dd/MM/yyyy HH:mm:ss">
+                            <p:message for='dataAutorizacao'/>
+                        </p:calendar>
+                        <p:outputLabel for="protocoloCancelamento" value="Protocolo Cancelamento"/>
+                        <p:inputText id="protocoloCancelamento" size="15" value="#{notaProdutoBean.notaProduto.protocoloCancelamento}">
+                            <p:message for="protocoloCancelamento"/>
+                        </p:inputText>
+                        <p:outputLabel for="dataCancelamento" value="Data Cancelamento"/>
+                        <p:calendar id="dataCancelamento" value="#{notaProdutoBean.notaProduto.dataCancelamento}" pattern="dd/MM/yyyy HH:mm:ss">
+                            <p:message for='dataCancelamento'/>
+                        </p:calendar>                       
+                    </p:panelGrid>
+                </p:fieldset>    
+                <br/>
+                <p:fieldset id='panelCliente' legend="Cliente">
+                    <p:panelGrid columns="6" columnClasses="centered" style="margin-top:20px">
+                        <p:outputLabel for="empresa" value="Empresa"/>
+                        <p:selectOneMenu widgetVar="widgetEmpresaLista" id="empresa" value="#{notaProdutoBean.notaProduto.empresa}" onchange="selecionarEmpresa()" filter="true" effect="fold" editable="false">
+                            <p:ajax listener="#{notaProdutoBean.selecionarEmpresa()}" event="change" update="pessoa cep endereco numero complemento cidade bairro ibge siafi estado pais email"/>
+                            <f:selectItem itemLabel="Lista Empresas" itemValue="" />
+                            <f:selectItems value="#{empresaBean.empresasVenda}" var="empresa"
+                                           itemValue="#{empresa}" itemLabel="#{empresa.razaoSocial}" />
+                            <p:message for="empresa"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="pessoa" value="Pessoa"/>
+                        <p:selectOneMenu  widgetVar="widgetPessoaLista" id="pessoa" value="#{notaProdutoBean.notaProduto.pessoa}" onchange="selecionarPessoa()" filter="true" effect="fold" editable="false">
+                            <p:ajax listener="#{notaProdutoBean.selecionarPessoa()}" event="change" update="empresa cep endereco numero complemento cidade bairro ibge siafi estado pais email"/>
+                            <f:selectItem itemLabel="Lista Pessoas" itemValue="" />
+                            <f:selectItems value="#{pessoaBean.pessoasVenda}" var="pessoa"
+                                           itemValue="#{pessoa}" itemLabel="#{pessoa.nomeCompleto}"/>
+                            <p:message for="pessoa"/> 
+                        </p:selectOneMenu> 
+                        <p:outputLabel for="descricao" value="Descrição"/>
+                        <p:inputText id="descricao" size="50" value="#{notaProdutoBean.notaProduto.descricao}" required="true" requiredMessage="O campo Descrição é obrigatório." >
+                            <p:message for="descricao"/>
+                        </p:inputText>                        
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelEndereco" legend="Endereço">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for="cep" value="Cep "/>
+                        <p:inputMask mask="99999-999" class="cep" id="cep" value="#{notaProdutoBean.notaProduto.cep}" required="true" requiredMessage="O campo Cep é obrigatório.">
+                            <p:message for="cep"/>
+                        </p:inputMask>
+                        <p:outputLabel for="endereco" value="Endereço " />
+                        <p:inputText class="endereco" id="endereco" size="60" value="#{notaProdutoBean.notaProduto.endereco}" required="true" requiredMessage="O campo Endereço é obrigatório.">
+                            <p:message for="endereco"/>
+                        </p:inputText>
+                        <p:outputLabel for="numero" value="Número "/>
+                        <p:inputText id="numero" type="integer" value="#{notaProdutoBean.notaProduto.numero}" required="true" requiredMessage="O campo Número é obrigatório.">
+                            <p:message for="numero"/>
+                        </p:inputText>
+                        <p:outputLabel for="complemento" value="Complemento "/>
+                        <p:inputText id="complemento" value="#{notaProdutoBean.notaProduto.complemento}"/>
+                        <p:outputLabel for="bairro" value="Bairro " />
+                        <p:inputText class="bairro" id="bairro" value="#{notaProdutoBean.notaProduto.bairro}" required="true" requiredMessage="O campo Bairro é obrigatório.">
+                            <p:message for="bairro"/>
+                        </p:inputText>
+                        <p:outputLabel for="cidade" value="Cidade "/>
+                        <p:inputText class="cidade" id="cidade" value="#{notaProdutoBean.notaProduto.cidade}" required="true" requiredMessage="O campo Cidade é obrigatório.">
+                            <p:message for="cidade"/>
+                        </p:inputText>
+                        <p:outputLabel for="ibge" value="IBGE"/>
+                        <p:inputText class="ibge" id="ibge" value="#{notaProdutoBean.notaProduto.ibge}" required="true" requiredMessage="O campo IBGE é obrigatório.">
+                            <p:message for="ibge"/>
+                        </p:inputText>
+                        <p:outputLabel for="siafi" value="SIAFI "/>
+                        <p:inputText id="siafi" value="#{notaProdutoBean.notaProduto.siafi}" required="true" requiredMessage="O campo SIAFI é obrigatório.">
+                            <p:message for="siafi"/>
+                        </p:inputText>
+                        <p:outputLabel for="estado" value="Estado "/>
+                        <p:selectOneMenu widgetVar="estado" id="estado" value="#{notaProdutoBean.notaProduto.estado}" required="true" requiredMessage="O campo Estado é obrigatório.">
+                            <f:selectItems value="#{listaBean.estados}" var="estado"
+                                           itemValue="#{estado}" itemLabel="#{estado.valor}" /> 
+                            <p:message for="estado"/>
+                        </p:selectOneMenu>              
+                        <p:outputLabel for="pais" value="Pais "/>
+                        <p:inputText class="pais" id="pais" value="#{notaProdutoBean.notaProduto.pais}" required="true" requiredMessage="O campo País é obrigatório.">
+                            <p:message for="pais"/>
+                        </p:inputText>
+                        <p:outputLabel for="telefone" value="Telefone "/>
+                        <p:inputMask mask="99-9999-99-99" id="telefone" value="#{notaProdutoBean.notaProduto.telefone}"/>
+                        <p:outputLabel for="celular" value="Celular "/>
+                        <p:inputMask mask="99-99999-99-99" id="celular" value="#{notaProdutoBean.notaProduto.celular}"/>
+                        <p:outputLabel for="email" value="Email "/>
+                        <p:inputText id="email" value="#{notaProdutoBean.notaProduto.email}" required="true" requiredMessage="O campo email é obrigatório." validatorMessage="Formato de email inválido.">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                            <p:message for="email"/>
+                        </p:inputText>  
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:commandButton ajax="true" update=":form:notaProdutoProdutoDialog" oncomplete="PF('produtoDialog').show(); calcularValoresProduto()" icon="ui-icon-plus" title="View"/>
+                <p:dataTable id="tabelaProduto" value="#{notaProdutoBean.notaProduto.notaProdutoProdutos}" var="notaProdutoProdutos">                   
+                    <p:column headerText="Referência">
+                        <h:outputText value="#{notaProdutoProdutos.referencia}"/>
+                    </p:column>
+                    <p:column headerText="Produto">
+                        <h:outputText value="#{notaProdutoProdutos.descricaoProduto}"/>
+                    </p:column>
+                    <p:column headerText="Unidade">
+                        <h:outputText value="#{notaProdutoProdutos.unidade}"/>
+                    </p:column>
+                    <p:column headerText="Quantidade">
+                        <h:outputText value="#{notaProdutoProdutos.quantidade}"/>
+                    </p:column>
+                    <p:column headerText="Valor Unitário">
+                        <h:outputText value="#{notaProdutoProdutos.valorUnitario}"/>
+                    </p:column>
+                    <p:column headerText="Valor Unitário">
+                        <h:outputText value="#{notaProdutoProdutos.valorUnitario}"/>
+                    </p:column>
+                    <p:column headerText="Valor Total">
+                        <h:outputText value="#{notaProdutoProdutos.valorTotal}"/>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton actionListener="#{notaProdutoBean.removeProduto(notaProdutoProdutos)}" icon="ui-icon-trash" update="tabelaProduto @form"/>
+                        <p:commandButton update=":form:notaProdutoProdutoDialog" oncomplete="PF('produtoDialog').show();calcularValoresProduto()" icon="ui-icon-search"  action="#{notaProdutoBean.setModoEdicao(true)}">
+                            <f:setPropertyActionListener value="#{notaProdutoProdutos}" target="#{notaProdutoBean.notaProdutoProdutos}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:dialog id="dialog" header="Produtos" widgetVar="produtoDialog" modal="true" showEffect="explode" hideEffect="explode" resizable="false">
+                    <p:outputPanel id="notaProdutoProdutoDialog">
+                        <p:panelGrid columns="8">
+                            <p:outputLabel for="produtoItem" value="Produto"/>
+                            <p:selectOneMenu id="produtoItem" value="#{notaProdutoBean.produto}" filter="true" filterMatchMode="startsWith">
+                                <p:ajax listener="#{notaProdutoBean.selecionarProduto()}" event="change" update="referenciaProduto"/>
+                                <f:selectItem itemValue="" itemLabel="Lista Produto"/> 
+                                <f:selectItems value="#{produtoBean.produtosVenda}" var="produto"
+                                               itemValue="#{produto}" itemLabel="#{produto.descricao}" /> 
+                                <p:message for="produtoItem"/>
+                            </p:selectOneMenu> 
+                            <p:outputLabel for="classFiscalProduto" value="Class Fiscal"/>
+                            <p:selectOneMenu id="classFiscalProduto" value="#{notaProdutoBean.notaProdutoProdutos.classFiscal}" filter="true" filterMatchMode="startsWith">
+                                <f:selectItems value="#{listaBean.classFiscal}" var="classFiscal"
+                                               itemValue="#{classFiscal}" itemLabel="#{classFiscal.valor}" /> 
+                                <p:message for="classFiscalProduto"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel for="CSTProduto" value="CST"/>
+                            <p:inputText id="CSTProduto" type="integer" value="#{notaProdutoBean.notaProdutoProdutos.CST}" required="true" requiredMessage="O campo CST é obrigatório.">                       
+                                <p:message for="CSTProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="CFOPProduto" value="CFOP"/>
+                            <p:selectOneMenu id="CFOPProduto" value="#{notaProdutoBean.notaProdutoProdutos.CFOP}" filter="true" filterMatchMode="startsWith">
+                                <p:ajax listener="#{notaProdutoBean.selecionarCFOP()}" event="change" update="descricaoCFOPProduto"/>
+                                <f:selectItem itemValue="" itemLabel="Lista CFOP"/>
+                                <f:selectItems value="#{listaBean.CFOP}" var="cfop"
+                                               itemValue="#{cfop}" itemLabel="#{cfop.valor}" /> 
+                                <p:message for="CFOPProduto"/>
+                            </p:selectOneMenu> 
+                            <p:outputLabel for="descricaoCFOPProduto" value="Descrição CFOP"/>
+                            <p:inputText id="descricaoCFOPProduto" value="#{notaProdutoBean.notaProdutoProdutos.descricaoCFOP}"/>           
+                            <p:outputLabel for="referenciaProduto" value="Referência"/>
+                            <p:inputText id="referenciaProduto" value="#{notaProdutoBean.notaProdutoProdutos.referencia}">                       
+                                <p:message for="referenciaProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="unidadeProduto" value="Unidade"/>
+                            <p:inputText id="unidadeProduto" value="#{notaProdutoBean.notaProdutoProdutos.unidade}">                       
+                                <p:message for="unidadeProduto"/>
+                            </p:inputText>                        
+                            <p:outputLabel for="estoqueAtualProduto" value="Estoque Atual"/>
+                            <p:inputText id="estoqueAtualProduto" type="integer" value="#{notaProdutoBean.notaProdutoProdutos.estoqueAtual}" required="true" requiredMessage="O campo Estoque atual é obrigatório.">                       
+                                <p:message for="estoqueAtualProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="quantidadeProduto" value="Quantidade"/>
+                            <p:inputText id="quantidadeProduto" type="integer" value="#{notaProdutoBean.notaProdutoProdutos.quantidade}" required="true" requiredMessage="O campo Quantidade é obrigatório.">                       
+                                <p:message for="quantidadeProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="valorUnitarioProduto" value="Valor Unitário"/>
+                            <p:inputNumber id="valorUnitarioProduto" value="#{notaProdutoBean.notaProdutoProdutos.valorUnitario}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Unitário é obrigatório">
+                                <p:message for="valorUnitarioProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorProdutoProduto" value="Valor Produto"/>
+                            <p:inputNumber id="valorProdutoProduto" value="#{notaProdutoBean.notaProdutoProdutos.valorProduto}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Produto é obrigatório">
+                                <p:message for="valorProdutoProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="descontoProduto" value="Desconto"/>
+                            <p:inputNumber id="descontoProduto" value="#{notaProdutoBean.notaProdutoProdutos.desconto}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Desconto é obrigatório">
+                                <p:message for="descontoProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorDescontoProduto" value="Valor Desconto"/>
+                            <p:inputNumber id='valorDescontoProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorDesconto}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Desconto é obrigatório">
+                                <p:message for="valorDescontoProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="margemIPIProduto" value="Margem IPI"/>
+                            <p:inputNumber id="margemIPIProduto" value="#{notaProdutoBean.notaProdutoProdutos.margemIPI}" symbol="%" symbolPosition="s" emptyValue="" minValue="0.00"   required="true" requiredMessage="O campo Margem IPI é obrigatório">
+                                <p:message for="margemIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="baseIPIProduto" value="Base IPI"/>
+                            <p:inputNumber id='baseIPIProduto' value="#{notaProdutoBean.notaProdutoProdutos.baseIPI}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Base IPI é obrigatório">
+                                <p:message for="baseIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="aliquotaIPIProduto" value="Alíquota IPI"/>
+                            <p:inputNumber id="aliquotaIPIProduto" value="#{notaProdutoBean.notaProdutoProdutos.aliquotaIPI}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Alíquota IPI é obrigatório">
+                                <p:message for="aliquotaIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorIPIProduto" value="Valor IPI"/>
+                            <p:inputNumber id='valorIPIProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorIPI}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor IPI é obrigatório">
+                                <p:message for="valorIPIProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="margemICMSProduto" value="Margem ICMS"/>
+                            <p:inputNumber id="margemICMSProduto" value="#{notaProdutoBean.notaProdutoProdutos.margemICMS}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Margem ICMS é obrigatório">
+                                <p:message for="margemICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="baseICMSProduto" value="Base ICMS"/>
+                            <p:inputNumber id='baseICMSProduto' value="#{notaProdutoBean.notaProdutoProdutos.baseICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMS é obrigatório">
+                                <p:message for="baseICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="aliquotaICMSProduto" value="Alíquota ICMS"/>
+                            <p:inputNumber id="aliquotaICMSProduto" value="#{notaProdutoBean.notaProdutoProdutos.aliquotaICMS}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Alíquota ICMS é obrigatório">
+                                <p:message for="aliquotaICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorICMSProduto" value="Valor ICMS"/>
+                            <p:inputNumber id='valorICMSProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMS é obrigatório">
+                                <p:message for="valorICMSProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="margemICMSSTProduto" value="Margem ICMSST"/>
+                            <p:inputNumber id="margemICMSSTProduto" value="#{notaProdutoBean.notaProdutoProdutos.margemICMSST}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Margem ICMSST é obrigatório">
+                                <p:message for="margemICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="baseICMSSTProduto" value="Base ICMSST"/>
+                            <p:inputNumber id='baseICMSSTProduto' value="#{notaProdutoBean.notaProdutoProdutos.baseICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMSST é obrigatório">
+                                <p:message for="baseICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="aliquotaICMSSTProduto" value="Alíquota ICMSST"/>
+                            <p:inputNumber id="aliquotaICMSSTProduto" value="#{notaProdutoBean.notaProdutoProdutos.aliquotaICMSST}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo Alíquota ICMSST é obrigatório">
+                                <p:message for="aliquotaICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorICMSSTProduto" value="Valor ICMSST"/>
+                            <p:inputNumber id='valorICMSSTProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMSST é obrigatório">
+                                <p:message for="valorICMSSTProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorFreteProduto" value="Valor Frete"/>
+                            <p:inputNumber id='valorFreteProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorFrete}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Frete é obrigatório">
+                                <p:message for="valorFreteProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorSeguroProduto" value="Valor Seguro"/>
+                            <p:inputNumber id='valorSeguroProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorSeguro}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Seguro é obrigatório">
+                                <p:message for="valorSeguroProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="outrasDespesasProduto" value="Outras Despesas"/>
+                            <p:inputNumber id='outrasDespesasProduto' value="#{notaProdutoBean.notaProdutoProdutos.outrasDespesas}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Outras Despesas é obrigatório">
+                                <p:message for="outrasDespesasProduto"/>
+                            </p:inputNumber>
+                            <p:outputLabel for="valorTotalProduto" value="Valor Total"/>
+                            <p:inputNumber id='valorTotalProduto' value="#{notaProdutoBean.notaProdutoProdutos.valorTotal}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
+                                <p:message for="valorTotalProduto"/>
+                            </p:inputNumber>
+                            <p:commandButton value="Add" actionListener="#{notaProdutoBean.addProduto()}" update="@form" oncomplete="calcularValoresProduto()"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+                <br/>
+                <p:fieldset id='panelValores' legend="Valores">
+                    <p:panelGrid columns='6' columnClasses='centered'>
+                        <p:outputLabel for="valorProdutos" value="Valor Produtos"/>
+                        <p:inputNumber class="valorProdutos" id="valorProdutos" value="#{notaProdutoBean.notaProduto.valorProdutos}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Produtos é obrigatório">
+                            <p:message for="valorProdutos"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorDesconto" value="Valor Desconto"/>
+                        <p:inputNumber class="valorDesconto" id="valorDesconto" value="#{notaProdutoBean.notaProduto.valorDesconto}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Desconto é obrigatório">
+                            <p:message for="valorDesconto"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="baseIPI" value="Base IPI"/>
+                        <p:inputNumber class="baseIPI" id="baseIPI" value="#{notaProdutoBean.notaProduto.baseIPI}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base IPI é obrigatório">
+                            <p:message for="baseIPI"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="
+                                       valorIPI" value="Valor IPI"/>
+                        <p:inputNumber class="valorIPI" id="valorIPI" value="#{notaProdutoBean.notaProduto.valorIPI}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor IPI é obrigatório">
+                            <p:message for="valorIPI"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="baseICMS" value="Base ICMS"/>
+                        <p:inputNumber class="baseICMS" id="baseICMS" value="#{notaProdutoBean.notaProduto.baseICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMS é obrigatório">
+                            <p:message for="baseICMS"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorICMS" value="Valor ICMS"/>
+                        <p:inputNumber class="valorICMS" id="valorICMS" value="#{notaProdutoBean.notaProduto.valorICMS}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMS é obrigatório">
+                            <p:message for="valorICMS"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="baseICMSST" value="Base ICMSST"/>
+                        <p:inputNumber class="baseICMSST" id="baseICMSST" value="#{notaProdutoBean.notaProduto.baseICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Base ICMSST é obrigatório">
+                            <p:message for="baseICMSST"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorICMSST" value="Valor ICMSST"/>
+                        <p:inputNumber class="valorICMSST" id="valorICMSST" value="#{notaProdutoBean.notaProduto.valorICMSST}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor ICMSST é obrigatório">
+                            <p:message for="valorICMSST"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorSeguro" value="Valor Seguro"/>
+                        <p:inputNumber class="valorSeguro" id="valorSeguro" value="#{notaProdutoBean.notaProduto.valorSeguro}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Seguro é obrigatório">
+                            <p:message for="valorSeguro"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="valorFrete" value="Valor Frete"/>
+                        <p:inputNumber class="valorFrete" id="valorFrete" value="#{notaProdutoBean.notaProduto.valorFrete}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Frete é obrigatório">
+                            <p:message for="valorFrete"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="prazoPagamento" value="Prazo Pagamento"/>
+                        <p:selectOneMenu widgetVar="prazoPagamento" id="prazoPagamento" value="#{notaProdutoBean.notaProduto.prazoPagamento}" required="true" requiredMessage="O campo Prazo de Pagamento é obrigatório." >
+                            <f:selectItems value="#{listaBean.prazoPagamento}" var="prazoPagamento"
+                                           itemValue="#{prazoPagamento}" itemLabel="#{prazoPagamento.valor}"/> 
+                            <p:ajax listener="#{notaProdutoBean.selecionarParcelas()}" update="parcelas valorParcela"/> 
+                            <p:message for="prazoPagamento"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="parcelas" value="Parcelas "/>
+                        <p:inputText id="parcelas" type="integer" value="#{notaProdutoBean.notaProduto.parcelas}" required="true" requiredMessage="O campo Parcelas é obrigatório.">
+                            <p:message for="parcelas"/>
+                        </p:inputText>
+                        <p:outputLabel for="valorParcela" value="Valor Parcela"/>
+                        <p:inputNumber class="valorParcela" id="valorParcela" value="#{notaProdutoBean.notaProduto.valorParcela}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Parcela é obrigatório">
+                            <p:message for="valorParcela"/>
+                        </p:inputNumber>
+                         <p:outputLabel for="creditoICMS" value="Crédito ICMS"/>
+                         <p:inputNumber id="creditoICMS" value="#{notaProdutoBean.notaProduto.creditoICMS}" symbol="%" symbolPosition="s" emptyValue=""  required="true" requiredMessage="O campo crédito ICMS é obrigatório.">
+                                <p:message for="creditoICMS"/>
+                         </p:inputNumber>
+                        <p:outputLabel for="valorTotal" value="Valor Total"/>
+                        <p:inputNumber class="valorTotal" id="valorTotal" value="#{notaProdutoBean.notaProduto.valorTotal}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
+                            <p:message for="valorTotal"/>
+                        </p:inputNumber>
+                        <p:outputLabel for="contaBancaria" value="Conta Bancária"/>
+                        <p:selectOneMenu widgetVar="contaBancaria" id="contaBancaria" value="#{notaProdutoBean.notaProduto.contaBancaria}" required="true" requiredMessage="O campo Conta Bancária é obrigatório.">
+                            <f:selectItems value="#{contaBancariaBean.contasBancarias}" var="contaBancaria"
+                                           itemValue="#{contaBancaria}" itemLabel="#{contaBancaria.descricao}" /> 
+                            <p:message for="contaBancaria"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="formaPagamento" value="Forma Pagamento"/>
+                        <p:selectOneMenu widgetVar="formaPagamento" id="formaPagamento" value="#{notaProdutoBean.notaProduto.formaPagamento}" required="true" requiredMessage="O campo Forma de Pagamento é obrigatório.">
+                            <f:selectItems value="#{listaBean.formaPagamento}" var="formaPagamento"
+                                           itemValue="#{formaPagamento}" itemLabel="#{formaPagamento.valor}" /> 
+                            <p:message for="formaPagamento"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id='panelDadosAdicionais' legend='Dados Adicionais'>
+                    <p:panelGrid columns='2' columnClasses='2'>
+                        <p:outputLabel for="detalhes" value="Detalhes"/>
+                        <p:inputTextarea id="detalhes" rows="6" cols="33" value="#{notaProdutoBean.notaProduto.detalhes}"/>                  
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset id="panelTransporte" legend="Transporte">
+                    <p:panelGrid columns="6" columnClasses="centered">
+                        <p:outputLabel for="empresaTransportadora" value="Empresa Transportadora"/>
+                        <p:selectOneMenu widgetVar="widgetEmpresaTransportadoraLista" id="empresaTransportadora" value="#{notaProdutoBean.notaProduto.empresaTransportadora}" onchange="" filter="true" effect="fold" editable="false">                            <f:selectItem itemLabel="Lista Empresas" itemValue="" />
+                            <p:ajax listener="#{notaProdutoBean.selecionarEmpresaTransporte()}" event="change" update="pessoaTransportadora descricaoTransportadora"/>
+                            <f:selectItems value="#{empresaBean.empresasTransportadora}" var="empresa"
+                                           itemValue="#{empresa}" itemLabel="#{empresa.razaoSocial}" />
+                        </p:selectOneMenu>
+                        <p:outputLabel for="pessoaTransportadora" value="Pessoa"/>
+                        <p:selectOneMenu  widgetVar="widgetPessoaTransportadoraLista" id="pessoaTransportadora" value="#{notaProdutoBean.notaProduto.pessoaTransportadora}" onchange="" filter="true" effect="fold" editable="false">
+                            <p:ajax listener="#{notaProdutoBean.selecionarPessoaTransporte()}" event="change" update="empresaTransportadora descricaoTransportadora"/>
+                            <f:selectItem itemLabel="Lista Pessoas" itemValue="" />
+                            <f:selectItems value="#{pessoaBean.pessoasTransportadora}" var="pessoa"
+                                           itemValue="#{pessoa}" itemLabel="#{pessoa.nomeCompleto}"/>
+                            <p:message for="pessoa"/> 
+                        </p:selectOneMenu> 
+                        <p:outputLabel for="descricaoTransportadora" value="Descrição Transportadora"/>
+                        <p:inputText id="descricaoTransportadora" size="50" value="#{notaProdutoBean.notaProduto.descricaoTransportadora}">
+                            <p:message for="descricaoTransportadora"/>
+                        </p:inputText>
+                        <p:outputLabel for="freteContaTransportadora" value="Frete Por Conta"/>
+                        <p:selectOneMenu id="freteContaTransportadora" value="#{notaProdutoBean.notaProduto.freteContaTransportadora}">                       
+                            <f:selectItem itemValue="EMITENTE" itemLabel="Emitente"/>
+                            <f:selectItem itemValue="DESTINATARIO" itemLabel="Destinatário"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="quantidadeTransportadora" value="Quantidade"/>
+                        <p:inputText id="quantidadeTransportadora" type="integer" value="#{notaProdutoBean.notaProduto.quantidadeTransportadora}"/>   
+                        <p:outputLabel for="especieTransportadora" value="Espécie"/>
+                        <p:selectOneMenu id="especieTransportadora" value="#{notaProdutoBean.notaProduto.especieTransportadora}">                       
+                            <f:selectItem itemValue="VOLUME" itemLabel="Volume"/>
+                            <f:selectItem itemValue="CAIXA" itemLabel="Caixa"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="pesoBrutoTransportadora" value="Peso Bruto"/>
+                        <p:inputNumber id="pesoBrutoTransportadora" value="#{notaProdutoBean.notaProduto.pesoBrutoTransportadora}"/>   
+                        <p:outputLabel for="pesoLiquidoTransportadora" value="Peso Liquído"/>
+                        <p:inputNumber id="pesoLiquidoTransportadora" value="#{notaProdutoBean.notaProduto.pesoLiquidoTransportadora}"/>                      
+                    </p:panelGrid>
+                </p:fieldset> 
+                <p:outputLabel class="auditoria" value="#{notaProdutoBean.exibirAuditoria(notaProdutoBean.notaProduto)}"/>
+            </h:form>
+        </div>
+    </h:body>
+</html>
