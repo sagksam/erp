@@ -38,7 +38,9 @@ and open the template in the editor.
                         </p:selectOneMenu>
                         <p:outputLabel for="descricao" value="Cliente: "/>
                         <p:inputText id="descricao" value="#{relatorioPedidoBean.descricao}" maxlength="60" />
-                        <p:commandButton value="Buscar" action="#{relatorioPedidoBean.configurarFiltros('Compra')}" update="tbl growl"/>
+                        <p:commandButton value="Buscar" action="#{relatorioPedidoBean.configurarFiltros('Compra')}" update="tbl growl">
+                          <p:effect type="pulsate" event="click" for="buscar"></p:effect>
+                        </p:commandButton>
                          <p:outputLabel for="exportacao" value="Exportar:"/>
                         <h:commandLink id="exportacao">
                             <p:graphicImage  library="imagens" name="pdf.png" />
