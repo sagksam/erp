@@ -180,7 +180,8 @@ public class NotaProdutoBean extends BaseBean implements Serializable{
         getNotaProduto().setEmail(getNotaProduto().getPessoa().getEmail());
     }
     
-    //Método para configurar a referencia do produto ao seleciona-lo no Pedido   
+    //Método para configurar a referencia do produto ao seleciona-lo no Pedido 
+    //TESTE DE COMMIT
     public void selecionarProduto(){
     
        getNotaProdutoProdutos().setReferencia(getProduto().getReferencia());
