@@ -18,6 +18,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -66,6 +67,19 @@ public class ConversorContaBean implements Serializable{
 
     public void setContaBancaria(ContaBancaria contaBancaria) {
         this.contaBancaria = contaBancaria;
+    }
+    
+    //Método que define qual dialog sera aberto, de acordo com o tamanho da lista de pedidos selecionados
+    public void defineDialog(){
+        
+        if(!getContasSelecionadas().isEmpty()){
+            RequestContext context = RequestContext.getCurrentInstance();
+            context.execute("PF('dialog').show();");
+        } 
+        else {
+            RequestContext context = RequestContext.getCurrentInstance();
+            context.execute("PF('dialog2').show();");
+        }
     }
     
     //MÉTODO UTILIZADO PARA CONCLUIR AS CONTAS SELECIONADAS

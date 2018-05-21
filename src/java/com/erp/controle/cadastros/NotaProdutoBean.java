@@ -184,6 +184,7 @@ public class NotaProdutoBean extends BaseBean implements Serializable{
     public void selecionarProduto(){
     
        getNotaProdutoProdutos().setReferencia(getProduto().getReferencia());
+       getNotaProdutoProdutos().setUnidade(getProduto().getUnidade());
     }
     
     //Método que configura as parcelas e o valor das parcelas no Pedido

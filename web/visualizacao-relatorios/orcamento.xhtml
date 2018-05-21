@@ -58,6 +58,10 @@ and open the template in the editor.
                             <p:commandButton value="Não" type="submit" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
                         </p:confirmDialog>
                         
+                        <p:dialog header="Aviso" widgetVar="dialog2" showEffect="explode" hideEffect="bounce" height="100">
+                            <h:outputText value="Nenhum item foi selecionado"/>
+                        </p:dialog>
+                        
                         <p:commandButton id="utilitarios" value="Gerar Pedido" actionListener="#{conversorOrcamentoBean.orcamentoParaPedido()}"/>  
                     </p:panelGrid>
                 </f:facet>

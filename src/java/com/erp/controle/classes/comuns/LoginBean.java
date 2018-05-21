@@ -27,7 +27,6 @@ import javax.persistence.Query;
 public class LoginBean extends BaseBean implements Serializable{
     
     private List<Usuario> usuarios;
-    static  Usuario usuario;
     private String nomeLogin;
     private String senhaLogin;
     
@@ -35,7 +34,6 @@ public class LoginBean extends BaseBean implements Serializable{
     public void init(){
     
         usuarios = new ArrayList<>();
-        usuario = new Usuario();
         nomeLogin = new String();
         senhaLogin = new String();
     }
@@ -82,15 +80,20 @@ public class LoginBean extends BaseBean implements Serializable{
     public String autenticaUsuario(){
     
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        for(Usuario u: getUsuarios()){
-        
-            if(u.getNome().equals(getNomeLogin()) && u.getSenha().equals(getSenhaLogin())){
-            //   facesContext.getExternalContext().getSessionMap().put("usuario", nomeLogin);
-               usuario = u;
-               return "/principal/cadastros?faces-redirect=true";
-            }    
-        }        
+        for (Usuario u : getUsuarios()) {
+            if (u.getNome().equals(getNomeLogin()) && u.getSenha().equals(getSenhaLogin())) {
+                facesContext.getExternalContext().getSessionMap().put("usuario", u.getId());
+                return "/principal/cadastros?faces-redirect=true";
+            }
+        }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Usuário ou senha incorretos."));
         return "";
+    }
+    
+    //Metodo que faz o logout do usuario
+    public String logout(){
+    
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "index?faces-redirect-true";
     }
 }

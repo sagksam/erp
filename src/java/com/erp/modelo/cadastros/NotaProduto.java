@@ -32,7 +32,7 @@ public class NotaProduto extends VendaBase implements Serializable{
     private String naturezaOperacao;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dataSaidaEntrada;
-    @Temporal(javax.persistence.TemporalType.TIME)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date horaEmissao;
     private String finalidade;
     private String chaveAcesso;

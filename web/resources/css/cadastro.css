@@ -139,3 +139,7 @@ body {
     overflow: visible;
 }
 
+.ui-widget-content .ui-datatable-empty-message{
+   display: none;
+}
+

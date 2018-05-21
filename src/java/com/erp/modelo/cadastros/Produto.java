@@ -31,6 +31,8 @@ public class Produto extends EntidadeBase{
     private String operacoes;
     @Column(length=30)
     private String referencia;
+    @Column(length=30)
+    private String unidade;
     @Column(length=250)
     private String descricao;
     @Column(length=30)
@@ -61,10 +63,11 @@ public class Produto extends EntidadeBase{
     public Produto() {
     }
 
-    public Produto(String categoria, String operacoes, String referencia, String descricao, String marca, String modelo, String status, String detalhes, String moeda, double valorCusto, double margemLucro, double valorVenda, double desconto, double valorDesconto, double valorFinal, String classificacaoFiscal, String cst, String ibpt, boolean controleEstoque, double estoqueAtual) {
+    public Produto(String categoria, String operacoes, String referencia, String unidade, String descricao, String marca, String modelo, String status, String detalhes, String moeda, double valorCusto, double margemLucro, double valorVenda, double desconto, double valorDesconto, double valorFinal, String classificacaoFiscal, String cst, String ibpt, boolean controleEstoque, double estoqueAtual) {
         this.categoria = categoria;
         this.operacoes = operacoes;
         this.referencia = referencia;
+        this.unidade = unidade;
         this.descricao = descricao;
         this.marca = marca;
         this.modelo = modelo;
@@ -108,6 +111,16 @@ public class Produto extends EntidadeBase{
     public void setReferencia(String referencia) {
         this.referencia = referencia;
     }
+
+    public String getUnidade() {
+        return unidade;
+    }
+
+    public void setUnidade(String unidade) {
+        this.unidade = unidade;
+    }
+    
+    
 
     public String getDescricao() {
         return descricao;

@@ -66,111 +66,117 @@ public class ConversorOrcamentoBean implements Serializable{
     //MÉTODO QUE FAZ A CONVERSÃO DE ORÇAMENTO PARA PEDIDO DE VENDA
     public void orcamentoParaPedido(){
     
-        try{
-            for (Orcamento orcamento : getOrcamentosSelecionados()) {
+        if(getOrcamentosSelecionados().isEmpty()){
+        
+            RequestContext.getCurrentInstance().execute("PF('dialog2').show();");
+        }
+        else{
+            try {
+                for (Orcamento orcamento : getOrcamentosSelecionados()) {
 
-                pedido = new Pedido();
-                getPedido().setTipo("Venda");
-                getPedido().setFilial(orcamento.getFilial());
-                getPedido().setEmpresa(orcamento.getEmpresa());
-                getPedido().setPessoa(orcamento.getPessoa());
-                getPedido().setDescricao(orcamento.getDescricao());
-                getPedido().setDataEmissao(new Date());
-                getPedido().setStatus("Pendente");
-                getPedido().setCep(orcamento.getCep());
-                getPedido().setEndereco(orcamento.getEndereco());
-                getPedido().setNumero(orcamento.getNumero());
-                getPedido().setComplemento(orcamento.getComplemento());
-                getPedido().setBairro(orcamento.getBairro());
-                getPedido().setCidade(orcamento.getCidade());
-                getPedido().setIbge(orcamento.getIbge());
-                getPedido().setSiafi(orcamento.getSiafi());
-                getPedido().setEstado(orcamento.getEstado());
-                getPedido().setPais(orcamento.getPais());
-                getPedido().setTelefone(orcamento.getTelefone());
-                getPedido().setCelular(orcamento.getCelular());
-                getPedido().setEmail(orcamento.getEmail());
-                getPedido().setValorProdutos(orcamento.getValorProdutos());
-                getPedido().setValorServicos(orcamento.getValorServicos());
-                getPedido().setValorDesconto(orcamento.getValorDesconto());
-                getPedido().setBaseIPI(orcamento.getBaseIPI());
-                getPedido().setValorIPI(orcamento.getValorIPI());
-                getPedido().setBaseICMS(orcamento.getBaseICMS());
-                getPedido().setValorICMS(orcamento.getValorICMS());
-                getPedido().setBaseICMSST(orcamento.getBaseICMSST());
-                getPedido().setValorICMSST(orcamento.getValorICMSST());
-                getPedido().setValorFrete(orcamento.getValorFrete());
-                getPedido().setValorSeguro(orcamento.getValorSeguro());
-                getPedido().setPrazoPagamento(orcamento.getPrazoPagamento());
-                getPedido().setParcelas(orcamento.getParcelas());
-                getPedido().setValorParcela(orcamento.getValorParcela());
-                getPedido().setValorTotal(orcamento.getValorTotal());
-                getPedido().setContaBancaria(orcamento.getContaBancaria());
-                getPedido().setFormaPagamento(orcamento.getFormaPagamento());
-                getPedido().setPedidosProdutos(new ArrayList<PedidoProdutos>());
-                getPedido().setPedidosServicos(new ArrayList<PedidoServicos>());
-                for (OrcamentoProdutos orcamentoProdutos : orcamento.getOrcamentosProdutos()) {
+                    pedido = new Pedido();
+                    getPedido().setTipo("Venda");
+                    getPedido().setFilial(orcamento.getFilial());
+                    getPedido().setEmpresa(orcamento.getEmpresa());
+                    getPedido().setPessoa(orcamento.getPessoa());
+                    getPedido().setDescricao(orcamento.getDescricao());
+                    getPedido().setDataEmissao(new Date());
+                    getPedido().setStatus("Pendente");
+                    getPedido().setCep(orcamento.getCep());
+                    getPedido().setEndereco(orcamento.getEndereco());
+                    getPedido().setNumero(orcamento.getNumero());
+                    getPedido().setComplemento(orcamento.getComplemento());
+                    getPedido().setBairro(orcamento.getBairro());
+                    getPedido().setCidade(orcamento.getCidade());
+                    getPedido().setIbge(orcamento.getIbge());
+                    getPedido().setSiafi(orcamento.getSiafi());
+                    getPedido().setEstado(orcamento.getEstado());
+                    getPedido().setPais(orcamento.getPais());
+                    getPedido().setTelefone(orcamento.getTelefone());
+                    getPedido().setCelular(orcamento.getCelular());
+                    getPedido().setEmail(orcamento.getEmail());
+                    getPedido().setValorProdutos(orcamento.getValorProdutos());
+                    getPedido().setValorServicos(orcamento.getValorServicos());
+                    getPedido().setValorDesconto(orcamento.getValorDesconto());
+                    getPedido().setBaseIPI(orcamento.getBaseIPI());
+                    getPedido().setValorIPI(orcamento.getValorIPI());
+                    getPedido().setBaseICMS(orcamento.getBaseICMS());
+                    getPedido().setValorICMS(orcamento.getValorICMS());
+                    getPedido().setBaseICMSST(orcamento.getBaseICMSST());
+                    getPedido().setValorICMSST(orcamento.getValorICMSST());
+                    getPedido().setValorFrete(orcamento.getValorFrete());
+                    getPedido().setValorSeguro(orcamento.getValorSeguro());
+                    getPedido().setPrazoPagamento(orcamento.getPrazoPagamento());
+                    getPedido().setParcelas(orcamento.getParcelas());
+                    getPedido().setValorParcela(orcamento.getValorParcela());
+                    getPedido().setValorTotal(orcamento.getValorTotal());
+                    getPedido().setContaBancaria(orcamento.getContaBancaria());
+                    getPedido().setFormaPagamento(orcamento.getFormaPagamento());
+                    getPedido().setPedidosProdutos(new ArrayList<PedidoProdutos>());
+                    getPedido().setPedidosServicos(new ArrayList<PedidoServicos>());
+                    for (OrcamentoProdutos orcamentoProdutos : orcamento.getOrcamentosProdutos()) {
 
-                    PedidoProdutos pedidoProdutos = new PedidoProdutos();
-                    pedidoProdutos.setProduto(orcamentoProdutos.getProduto());
-                    pedidoProdutos.setReferencia(orcamentoProdutos.getReferencia());
-                    pedidoProdutos.setDescricaoProduto(orcamentoProdutos.getDescricaoProduto());
-                    pedidoProdutos.setUnidade(orcamentoProdutos.getUnidade());
-                    pedidoProdutos.setQuantidade(orcamentoProdutos.getQuantidade());
-                    pedidoProdutos.setValorUnitario(orcamentoProdutos.getValorUnitario());
-                    pedidoProdutos.setValorProduto(orcamentoProdutos.getValorProduto());
-                    pedidoProdutos.setDesconto(orcamentoProdutos.getDesconto());
-                    pedidoProdutos.setValorDesconto(orcamentoProdutos.getValorDesconto());
-                    pedidoProdutos.setMargemIPI(orcamentoProdutos.getMargemIPI());
-                    pedidoProdutos.setBaseIPI(orcamentoProdutos.getBaseIPI());
-                    pedidoProdutos.setAliquotaIPI(orcamentoProdutos.getAliquotaIPI());
-                    pedidoProdutos.setValorIPI(orcamentoProdutos.getValorIPI());
-                    pedidoProdutos.setMargemICMS(orcamentoProdutos.getMargemICMS());
-                    pedidoProdutos.setBaseICMS(orcamentoProdutos.getBaseICMS());
-                    pedidoProdutos.setAliquotaICMS(orcamentoProdutos.getAliquotaICMS());
-                    pedidoProdutos.setValorICMS(orcamentoProdutos.getValorICMS());
-                    pedidoProdutos.setMargemICMSST(orcamentoProdutos.getMargemICMSST());
-                    pedidoProdutos.setBaseICMSST(orcamentoProdutos.getBaseICMSST());
-                    pedidoProdutos.setAliquotaICMSST(orcamentoProdutos.getAliquotaICMSST());
-                    pedidoProdutos.setValorICMSST(orcamentoProdutos.getValorICMSST());
-                    pedidoProdutos.setValorFrete(orcamentoProdutos.getValorFrete());
-                    pedidoProdutos.setValorSeguro(orcamentoProdutos.getValorSeguro());
-                    pedidoProdutos.setOutrasDespesas(orcamentoProdutos.getOutrasDespesas());
-                    pedidoProdutos.setValorTotal(orcamentoProdutos.getValorTotal());
-                    pedidoProdutos.setPedido(getPedido());
-                    getPedido().getPedidosProdutos().add(pedidoProdutos);
+                        PedidoProdutos pedidoProdutos = new PedidoProdutos();
+                        pedidoProdutos.setProduto(orcamentoProdutos.getProduto());
+                        pedidoProdutos.setReferencia(orcamentoProdutos.getReferencia());
+                        pedidoProdutos.setDescricaoProduto(orcamentoProdutos.getDescricaoProduto());
+                        pedidoProdutos.setUnidade(orcamentoProdutos.getUnidade());
+                        pedidoProdutos.setQuantidade(orcamentoProdutos.getQuantidade());
+                        pedidoProdutos.setValorUnitario(orcamentoProdutos.getValorUnitario());
+                        pedidoProdutos.setValorProduto(orcamentoProdutos.getValorProduto());
+                        pedidoProdutos.setDesconto(orcamentoProdutos.getDesconto());
+                        pedidoProdutos.setValorDesconto(orcamentoProdutos.getValorDesconto());
+                        pedidoProdutos.setMargemIPI(orcamentoProdutos.getMargemIPI());
+                        pedidoProdutos.setBaseIPI(orcamentoProdutos.getBaseIPI());
+                        pedidoProdutos.setAliquotaIPI(orcamentoProdutos.getAliquotaIPI());
+                        pedidoProdutos.setValorIPI(orcamentoProdutos.getValorIPI());
+                        pedidoProdutos.setMargemICMS(orcamentoProdutos.getMargemICMS());
+                        pedidoProdutos.setBaseICMS(orcamentoProdutos.getBaseICMS());
+                        pedidoProdutos.setAliquotaICMS(orcamentoProdutos.getAliquotaICMS());
+                        pedidoProdutos.setValorICMS(orcamentoProdutos.getValorICMS());
+                        pedidoProdutos.setMargemICMSST(orcamentoProdutos.getMargemICMSST());
+                        pedidoProdutos.setBaseICMSST(orcamentoProdutos.getBaseICMSST());
+                        pedidoProdutos.setAliquotaICMSST(orcamentoProdutos.getAliquotaICMSST());
+                        pedidoProdutos.setValorICMSST(orcamentoProdutos.getValorICMSST());
+                        pedidoProdutos.setValorFrete(orcamentoProdutos.getValorFrete());
+                        pedidoProdutos.setValorSeguro(orcamentoProdutos.getValorSeguro());
+                        pedidoProdutos.setOutrasDespesas(orcamentoProdutos.getOutrasDespesas());
+                        pedidoProdutos.setValorTotal(orcamentoProdutos.getValorTotal());
+                        pedidoProdutos.setPedido(getPedido());
+                        getPedido().getPedidosProdutos().add(pedidoProdutos);
+
+                    }
+                    for (OrcamentoServicos orcamentoServicos : orcamento.getOrcamentosServicos()) {
+
+                        PedidoServicos pedidoServicos = new PedidoServicos();
+                        pedidoServicos.setServico(orcamentoServicos.getServico());
+                        pedidoServicos.setDescricaoServico(orcamentoServicos.getDescricaoServico());
+                        pedidoServicos.setUnidade(orcamentoServicos.getUnidade());
+                        pedidoServicos.setQuantidade(orcamentoServicos.getQuantidade());
+                        pedidoServicos.setValorUnitario(orcamentoServicos.getValorUnitario());
+                        pedidoServicos.setValorServico(orcamentoServicos.getValorServico());
+                        pedidoServicos.setDesconto(orcamentoServicos.getDesconto());
+                        pedidoServicos.setValorDesconto(orcamentoServicos.getValorDesconto());
+                        pedidoServicos.setValorTotal(orcamentoServicos.getValorTotal());
+                        pedidoServicos.setPedido(getPedido());
+                        getPedido().getPedidosServicos().add(pedidoServicos);
+
+                    }
+                    new BaseBean().salvar(getPedido());
+                }
+                if (getPedido().getId() > 0) {
+                    RequestContext.getCurrentInstance().execute("PF('dialog').show();");
 
                 }
-                for(OrcamentoServicos orcamentoServicos: orcamento.getOrcamentosServicos()){
-                
-                    PedidoServicos pedidoServicos = new PedidoServicos();
-                    pedidoServicos.setServico(orcamentoServicos.getServico());
-                    pedidoServicos.setDescricaoServico(orcamentoServicos.getDescricaoServico());
-                    pedidoServicos.setUnidade(orcamentoServicos.getUnidade());
-                    pedidoServicos.setQuantidade(orcamentoServicos.getQuantidade());
-                    pedidoServicos.setValorUnitario(orcamentoServicos.getValorUnitario());
-                    pedidoServicos.setValorServico(orcamentoServicos.getValorServico());
-                    pedidoServicos.setDesconto(orcamentoServicos.getDesconto());
-                    pedidoServicos.setValorDesconto(orcamentoServicos.getValorDesconto());
-                    pedidoServicos.setValorTotal(orcamentoServicos.getValorTotal());
-                    pedidoServicos.setPedido(getPedido());
-                    getPedido().getPedidosServicos().add(pedidoServicos);
-                    
-                }
-                new BaseBean().salvar(getPedido());
+
+            } 
+            catch (Exception e) {
+
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+
             }
-            if(getPedido().getId() > 0){
-              RequestContext.getCurrentInstance().execute("PF('dialog').show();");
-
-            }  
-            
-        } 
-        catch (Exception e) {
-
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
-
-        } 
+        }
     }
     
     public void atualizarOrcamento(){

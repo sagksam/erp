@@ -39,27 +39,32 @@ and open the template in the editor.
                         <p:outputLabel for="descricao" value="Cliente: "/>
                         <p:inputText id="descricao" value="#{relatorioPedidoBean.descricao}" maxlength="60" />
                         <p:commandButton id="buscar" value="Buscar" action="#{relatorioPedidoBean.configurarFiltros('Compra')}" update="tbl growl">
-                          <p:effect type="pulsate" event="click" for="buscar"></p:effect>
+                            <p:effect type="pulsate" event="click" for="buscar"></p:effect>
                         </p:commandButton>
-                         <p:outputLabel for="exportacao" value="Exportar:"/>
+                        <p:outputLabel for="exportacao" value="Exportar:"/>
                         <h:commandLink id="exportacao">
                             <p:graphicImage  library="imagens" name="pdf.png" />
                             <p:dataExporter type="pdf" target="tbl" fileName="pedidoscompra" pageOnly="true" />
                         </h:commandLink>
-                        
-                        <p:commandButton value="Alterar Status" type="button" onclick="PF('dialog').show()" />
+
+                        <p:commandButton value="Alterar Status" actionListener="#{conversorPedidoNotaBean.defineDialog()}" />
                         <p:dialog header="Alterar Status" widgetVar="dialog" showEffect="explode" hideEffect="bounce" height="100">
-                          <p:panelGrid columns="8" columnClasses="centered" layout="grid">  
-                            <p:outputLabel for='status1' value='Status'/>
-                            <p:selectOneMenu id="status1" value="#{conversorPedidoNotaBean.status}" required="true" requiredMessage="O campo Status é obrigatório.">
-                              <f:selectItems value="#{listaBean.cadastroStatus}" var="status"
-                                           itemValue="#{status}" itemLabel="#{status.valor}" />
-                              <p:message for="status"/>
-                             </p:selectOneMenu><br/>
-                             <p:commandButton value="Atualizar" actionListener="#{conversorPedidoNotaBean.atualizarStatusPedidoCompra()}" update="@all"/>
-                          </p:panelGrid>
+                            <p:panelGrid columns="8" columnClasses="centered" layout="grid">  
+                                <p:outputLabel for='status1' value='Status'/>
+                                <p:selectOneMenu id="status1" value="#{conversorPedidoNotaBean.status}" required="true" requiredMessage="O campo Status é obrigatório.">
+                                    <f:selectItems value="#{listaBean.cadastroStatus}" var="status"
+                                                   itemValue="#{status}" itemLabel="#{status.valor}" />
+                                    <p:message for="status"/>
+                                </p:selectOneMenu><br/>
+                                <p:commandButton value="Atualizar" actionListener="#{conversorPedidoNotaBean.atualizarStatusPedidoCompra()}" update="tbl growl"/>
+                            </p:panelGrid>
                         </p:dialog>   
                     </p:panelGrid>
+
+                    <p:dialog header="Aviso" widgetVar="dialog2" showEffect="explode" hideEffect="bounce" height="100">
+                        <h:outputText value="Nenhum item foi selecionado"/>
+                    </p:dialog>
+
                 </f:facet>
             </p:toolbar>
             <p:dataTable id="tbl" var="pedido" value="#{relatorioPedidoBean.pedidosCompra}" widgetVar="pedidosTabela" selection="#{conversorPedidoNotaBean.pedidosSelecionados}" rowKey="#{pedido.id}"
@@ -71,7 +76,7 @@ and open the template in the editor.
                         <p:dataExporter type="pdf" target="tbl" fileName="pedidoscompra"/>
                     </h:commandLink>
                 </f:facet>
-                
+
                 <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
                 <p:column headerText="ID">
                     <h:outputText value="#{pedido.id}"/>

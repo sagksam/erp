@@ -312,6 +312,7 @@ public class Lista {
     public enum CadastroStatus {
     
         PENDENTE("Pendente", false),
+        FATURADO("Faturado", false),
         ENTREGUE("Entregue", true),
         CONCLUIDO("Concluído", false),
         CANCELADO("Cancelado", false);

@@ -249,6 +249,7 @@ public class OrcamentoBean extends BaseBean implements Serializable {
     public void selecionarProduto() {
 
         getOrcamentoProdutos().setReferencia(getProduto().getReferencia());
+        getOrcamentoProdutos().setUnidade(getProduto().getUnidade());
     }
 
     //Método para configurar a unidade do servico ao seleciona-lo no Orcamento
@@ -284,38 +285,43 @@ public class OrcamentoBean extends BaseBean implements Serializable {
         double valorSeguro = 0;
         double valorTotal = 0;
 
-        try {
-            for (OrcamentoProdutos c : getOrcamento().getOrcamentosProdutos()) {
+        if(getOrcamento().getOrcamentosProdutos() != null){
+            try {
+                for (OrcamentoProdutos c : getOrcamento().getOrcamentosProdutos()) {
 
-                valorProdutos += c.getValorProduto();
-                valorDesconto += c.getValorDesconto();
-                baseIPI += c.getBaseIPI();
-                valorIPI += c.getValorIPI();
-                baseICMS += c.getBaseICMS();
-                valorICMS += c.getValorICMS();
-                baseICMSST += c.getBaseICMSST();
-                valorICMSST += c.getValorICMSST();
-                valorFrete += c.getValorFrete();
-                valorSeguro += c.getValorSeguro();
-                valorTotal += c.getValorTotal();
+                    valorProdutos += c.getValorProduto();
+                    valorDesconto += c.getValorDesconto();
+                    baseIPI += c.getBaseIPI();
+                    valorIPI += c.getValorIPI();
+                    baseICMS += c.getBaseICMS();
+                    valorICMS += c.getValorICMS();
+                    baseICMSST += c.getBaseICMSST();
+                    valorICMSST += c.getValorICMSST();
+                    valorFrete += c.getValorFrete();
+                    valorSeguro += c.getValorSeguro();
+                    valorTotal += c.getValorTotal();
+                }
+            } 
+            catch (Exception e) {
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
             }
-        } 
-        catch (Exception e) {
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
         }
 
-        try {
-            for (OrcamentoServicos c : getOrcamento().getOrcamentosServicos()) {
-                valorServicos += c.getValorServico();
-                valorDesconto += c.getValorDesconto();
-                valorTotal += c.getValorTotal();
+        if(getOrcamento().getOrcamentosServicos() != null){
+            try {
+                for (OrcamentoServicos c : getOrcamento().getOrcamentosServicos()) {
+                    valorServicos += c.getValorServico();
+                    valorDesconto += c.getValorDesconto();
+                    valorTotal += c.getValorTotal();
+                }
+            } 
+            catch (Exception e) {
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
             }
-        } 
-        catch (Exception e) {
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
         }
+        
         getOrcamento().setValorProdutos(valorProdutos);
         getOrcamento().setValorServicos(valorServicos);
         getOrcamento().setValorDesconto(valorDesconto);

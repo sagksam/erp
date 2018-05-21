@@ -6,9 +6,6 @@
 package com.erp.principal;
 
 
-
-
-
 /**
  *
  * @author bianca
@@ -17,6 +14,6 @@ public class Main {
     
     public static void main(String[] args) throws Exception{
      
-
+        
     }      
 }

@@ -224,6 +224,7 @@ public class PedidoBean extends BaseBean implements Serializable {
     public void selecionarProduto() {
 
         getPedidoProdutos().setReferencia(getProduto().getReferencia());
+        getPedidoProdutos().setUnidade(getProduto().getUnidade());
     }
 
     //Método para configurar a unidade do servico ao seleciona-lo no Pedido
@@ -259,37 +260,41 @@ public class PedidoBean extends BaseBean implements Serializable {
         double valorSeguro = 0;
         double valorTotal = 0;
 
-        try {
-            for (PedidoProdutos c : getPedido().getPedidosProdutos()) {
+        if(getPedido().getPedidosProdutos() != null){
+            try {
+                for (PedidoProdutos c : getPedido().getPedidosProdutos()) {
 
-                valorProdutos += c.getValorProduto();
-                valorDesconto += c.getValorDesconto();
-                baseIPI += c.getBaseIPI();
-                valorIPI += c.getValorIPI();
-                baseICMS += c.getBaseICMS();
-                valorICMS += c.getValorICMS();
-                baseICMSST += c.getBaseICMSST();
-                valorICMSST += c.getValorICMSST();
-                valorFrete += c.getValorFrete();
-                valorSeguro += c.getValorSeguro();
-                valorTotal += c.getValorTotal();
+                    valorProdutos += c.getValorProduto();
+                    valorDesconto += c.getValorDesconto();
+                    baseIPI += c.getBaseIPI();
+                    valorIPI += c.getValorIPI();
+                    baseICMS += c.getBaseICMS();
+                    valorICMS += c.getValorICMS();
+                    baseICMSST += c.getBaseICMSST();
+                    valorICMSST += c.getValorICMSST();
+                    valorFrete += c.getValorFrete();
+                    valorSeguro += c.getValorSeguro();
+                    valorTotal += c.getValorTotal();
+                }
+            } 
+            catch (Exception e) {
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
             }
-        } 
-        catch (Exception e) {
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
         }
 
-        try {
-            for (PedidoServicos c : getPedido().getPedidosServicos()) {
-                valorServicos += c.getValorServico();
-                valorDesconto += c.getValorDesconto();
-                valorTotal += c.getValorTotal();
+        if(getPedido().getPedidosServicos() != null){
+            try {
+                for (PedidoServicos c : getPedido().getPedidosServicos()) {
+                    valorServicos += c.getValorServico();
+                    valorDesconto += c.getValorDesconto();
+                    valorTotal += c.getValorTotal();
+                }
+            } 
+            catch (Exception e) {
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
             }
-        } 
-        catch (Exception e) {
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
         }
         getPedido().setValorProdutos(valorProdutos);
         getPedido().setValorServicos(valorServicos);

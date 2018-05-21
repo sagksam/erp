@@ -91,7 +91,7 @@ and open the template in the editor.
                             <p:message for='dataSaidaEntrada'/>
                         </p:calendar>
                         <p:outputLabel for="horaEmissao" value="Hora Emissão"/>
-                        <p:calendar id="horaEmissao" value="#{notaProdutoBean.notaProduto.horaEmissao}" pattern="dd/MM/yyyy HH:mm:ss" mask="true">
+                        <p:calendar id="horaEmissao" value="#{notaProdutoBean.notaProduto.horaEmissao}" pattern="dd/MM/yyyy HH:mm:ss" mask="true" mindate="#{now}">
                             <p:message for='horaEmissao'/>
                         </p:calendar> 
                         <p:outputLabel for="finalidade" value="Finalidade"/>

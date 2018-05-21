@@ -49,8 +49,8 @@ and open the template in the editor.
                             <p:graphicImage  library="imagens" name="pdf.png" />
                             <p:dataExporter type="pdf" target="tbl" fileName="contasareceber" pageOnly="true" />
                         </h:commandLink>
-                        <p:commandButton value="Concluir" type="button" onclick="PF('widgetConcluirConta').show()" />
-                        <p:dialog id="dialogConcluirConta" header="Concluir Conta" widgetVar="widgetConcluirConta" showEffect="explode" hideEffect="bounce" height="100">
+                        <p:commandButton value="Concluir" actionListener="#{conversorContaBean.defineDialog()}" />
+                        <p:dialog header="Concluir Conta" widgetVar="dialog" showEffect="explode" hideEffect="bounce" height="100">
                           <p:panelGrid columns="8" columnClasses="centered" layout="grid">  
                             <p:outputLabel for='dataPagamento' value='Pagamento: '/>
                             <p:calendar id="dataPagamento" value="#{conversorContaBean.dataPagamento}" pattern="dd/MM/yyyy" mask="true"/>
@@ -60,10 +60,15 @@ and open the template in the editor.
                                                itemValue="#{contaBancaria}" itemLabel="#{contaBancaria.descricao}" />
                               <p:message for="contaBancaria"/>
                              </p:selectOneMenu><br/>
-                             <p:commandButton value="Concluir" actionListener="#{conversorContaBean.concluirConta()}" update="tbl growl dialogConcluirConta"/>
+                             <p:commandButton value="Concluir" actionListener="#{conversorContaBean.concluirConta()}" update="tbl growl"/>
                           </p:panelGrid>
                         </p:dialog>
                     </p:panelGrid>
+             
+                    <p:dialog header="Aviso" widgetVar="dialog2" showEffect="explode" hideEffect="bounce" height="100">
+                        <h:outputText value="Nenhum item foi selecionado"/>
+                    </p:dialog>
+                    
                 </f:facet>
             </p:toolbar>
             <p:dataTable id="tbl" var="conta" value="#{relatorioContaBean.contasReceber}" widgetVar="contasTabela" selection="#{conversorContaBean.contasSelecionadas}" rowKey="#{conta.id}" rowStyleClass="#{conversorContaBean.isContaVencida(conta.dataVencimento, conta.dataPagamento) eq true ? 'colored' :null}"

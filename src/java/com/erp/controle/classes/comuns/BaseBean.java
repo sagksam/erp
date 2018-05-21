@@ -70,7 +70,8 @@ public class BaseBean implements Serializable {
     //Método que retorna o Usuário atual
     public Usuario getUsuario() {
 
-        usuario = getDao().findById(1, Usuario.class);
+        int id = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario");
+        usuario = getDao().findById(id, Usuario.class);
         return usuario;
     }
 

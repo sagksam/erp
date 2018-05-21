@@ -86,181 +86,191 @@ public class ConversorPedidoNotaBean implements Serializable{
 
     //MÉTODO QUE FAZ A CONVERSÃO DE PEDIDO DE VENDA EM NOTA DE PRODUTO
     public void pedidoParaNotaProduto(){
-    
-        try{
-            for(Pedido pedido: getPedidosSelecionados()){
-            
-                notaProduto = new NotaProduto();
-                getNotaProduto().setFilial(pedido.getFilial());
-                List<NotaProduto> notasProdutos = new NotaProdutoBean().getNotasProdutos();
-                for(int i = notasProdutos.size()-1; i >= 0; i--){         
-                  if(notasProdutos.get(i).getFilial().getCnpj().equals(getNotaProduto().getFilial().getCnpj())){               
-                    getNotaProduto().setNotaFiscal(notasProdutos.get(i).getNotaFiscal() + 1);
-                  }              
-                }
-                getNotaProduto().setDataEmissao(new Date());
-                getNotaProduto().setHoraEmissao(new Date());
-                getNotaProduto().setEmpresa(pedido.getEmpresa());
-                getNotaProduto().setPessoa(pedido.getPessoa());
-                getNotaProduto().setDescricao(pedido.getDescricao());
-                getNotaProduto().setCep(pedido.getCep());
-                getNotaProduto().setEndereco(pedido.getEndereco());
-                getNotaProduto().setNumero(pedido.getNumero());
-                getNotaProduto().setComplemento(pedido.getComplemento());
-                getNotaProduto().setBairro(pedido.getBairro());
-                getNotaProduto().setCidade(pedido.getCidade());
-                getNotaProduto().setIbge(pedido.getIbge());
-                getNotaProduto().setSiafi(pedido.getSiafi());
-                getNotaProduto().setEstado(pedido.getEstado());
-                getNotaProduto().setPais(pedido.getPais());
-                getNotaProduto().setTelefone(pedido.getTelefone());
-                getNotaProduto().setCelular(pedido.getCelular());
-                getNotaProduto().setEmail(pedido.getEmail());
-                getNotaProduto().setValorProdutos(pedido.getValorProdutos());
-                getNotaProduto().setValorDesconto(pedido.getValorDesconto());
-                getNotaProduto().setBaseIPI(pedido.getBaseIPI());
-                getNotaProduto().setValorIPI(pedido.getValorIPI());
-                getNotaProduto().setBaseICMS(pedido.getBaseICMS());
-                getNotaProduto().setValorICMS(pedido.getValorICMS());
-                getNotaProduto().setBaseICMSST(pedido.getBaseICMSST());
-                getNotaProduto().setValorICMSST(pedido.getValorICMSST());
-                getNotaProduto().setValorFrete(pedido.getValorFrete());
-                getNotaProduto().setValorSeguro(pedido.getValorSeguro());
-                getNotaProduto().setPrazoPagamento(pedido.getPrazoPagamento());
-                getNotaProduto().setParcelas(pedido.getParcelas());
-                getNotaProduto().setValorParcela(pedido.getValorParcela());
-                getNotaProduto().setCreditoICMS(getNotaProduto().getFilial().getCreditoICMS());
-                getNotaProduto().setValorTotal(pedido.getValorTotal());
-                getNotaProduto().setContaBancaria(pedido.getContaBancaria());
-                getNotaProduto().setFormaPagamento(pedido.getFormaPagamento());
-                getNotaProduto().setNotaProdutoProdutos(new ArrayList<NotaProdutoProdutos>());
-                for(PedidoProdutos pedidoProdutos: pedido.getPedidosProdutos()){
-                
-                    NotaProdutoProdutos notaProdutoProdutos = new NotaProdutoProdutos();
-                    notaProdutoProdutos.setProduto(pedidoProdutos.getProduto());
-                    notaProdutoProdutos.setCST(0);
-                    notaProdutoProdutos.setReferencia(pedidoProdutos.getReferencia());
-                    notaProdutoProdutos.setDescricaoProduto(pedidoProdutos.getDescricaoProduto());
-                    notaProdutoProdutos.setUnidade(pedidoProdutos.getUnidade());
-                    notaProdutoProdutos.setQuantidade(pedidoProdutos.getQuantidade());
-                    notaProdutoProdutos.setValorUnitario(pedidoProdutos.getValorUnitario());
-                    notaProdutoProdutos.setValorProduto(pedidoProdutos.getValorProduto());
-                    notaProdutoProdutos.setDesconto(pedidoProdutos.getDesconto());
-                    notaProdutoProdutos.setValorDesconto(pedidoProdutos.getValorDesconto());
-                    notaProdutoProdutos.setMargemIPI(pedidoProdutos.getMargemIPI());
-                    notaProdutoProdutos.setBaseIPI(pedidoProdutos.getBaseIPI());
-                    notaProdutoProdutos.setAliquotaIPI(pedidoProdutos.getAliquotaIPI());
-                    notaProdutoProdutos.setValorIPI(pedidoProdutos.getValorIPI());
-                    notaProdutoProdutos.setMargemICMS(pedidoProdutos.getMargemICMS());
-                    notaProdutoProdutos.setBaseICMS(pedidoProdutos.getBaseICMS());
-                    notaProdutoProdutos.setAliquotaICMS(pedidoProdutos.getAliquotaICMS());
-                    notaProdutoProdutos.setValorICMS(pedidoProdutos.getValorICMS());
-                    notaProdutoProdutos.setMargemICMSST(pedidoProdutos.getMargemICMSST());
-                    notaProdutoProdutos.setBaseICMSST(pedidoProdutos.getBaseICMSST());
-                    notaProdutoProdutos.setAliquotaICMSST(pedidoProdutos.getAliquotaICMSST());
-                    notaProdutoProdutos.setValorICMSST(pedidoProdutos.getValorICMSST());
-                    notaProdutoProdutos.setValorFrete(pedidoProdutos.getValorFrete());
-                    notaProdutoProdutos.setValorSeguro(pedidoProdutos.getValorSeguro());
-                    notaProdutoProdutos.setOutrasDespesas(pedidoProdutos.getOutrasDespesas());
-                    notaProdutoProdutos.setValorTotal(pedidoProdutos.getValorTotal());
-                    notaProdutoProdutos.setNotaProduto(getNotaProduto());
-                    getNotaProduto().getNotaProdutoProdutos().add(notaProdutoProdutos);
-                   
-                }
-                new BaseBean().salvar(getNotaProduto());
-                if(getNotaProduto().getId() > 0){
-                    RequestContext.getCurrentInstance().execute("PF('dialog').show();");
-                }
-            }
-        }
-        catch(Exception e){
         
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+        if(getPedidosSelecionados().isEmpty()){
+            RequestContext.getCurrentInstance().execute("PF('dialog2').show();");
+        }
+        else{
+            try {
+                for (Pedido pedido : getPedidosSelecionados()) {
 
+                    notaProduto = new NotaProduto();
+                    getNotaProduto().setFilial(pedido.getFilial());
+                    List<NotaProduto> notasProdutos = new NotaProdutoBean().getNotasProdutos();
+                    for (int i = notasProdutos.size() - 1; i >= 0; i--) {
+                        if (notasProdutos.get(i).getFilial().getCnpj().equals(getNotaProduto().getFilial().getCnpj())) {
+                            getNotaProduto().setNotaFiscal(notasProdutos.get(i).getNotaFiscal() + 1);
+                        }
+                    }
+                    getNotaProduto().setDataEmissao(new Date());
+                    getNotaProduto().setHoraEmissao(new Date());
+                    getNotaProduto().setEmpresa(pedido.getEmpresa());
+                    getNotaProduto().setPessoa(pedido.getPessoa());
+                    getNotaProduto().setDescricao(pedido.getDescricao());
+                    getNotaProduto().setCep(pedido.getCep());
+                    getNotaProduto().setEndereco(pedido.getEndereco());
+                    getNotaProduto().setNumero(pedido.getNumero());
+                    getNotaProduto().setComplemento(pedido.getComplemento());
+                    getNotaProduto().setBairro(pedido.getBairro());
+                    getNotaProduto().setCidade(pedido.getCidade());
+                    getNotaProduto().setIbge(pedido.getIbge());
+                    getNotaProduto().setSiafi(pedido.getSiafi());
+                    getNotaProduto().setEstado(pedido.getEstado());
+                    getNotaProduto().setPais(pedido.getPais());
+                    getNotaProduto().setTelefone(pedido.getTelefone());
+                    getNotaProduto().setCelular(pedido.getCelular());
+                    getNotaProduto().setEmail(pedido.getEmail());
+                    getNotaProduto().setValorProdutos(pedido.getValorProdutos());
+                    getNotaProduto().setValorDesconto(pedido.getValorDesconto());
+                    getNotaProduto().setBaseIPI(pedido.getBaseIPI());
+                    getNotaProduto().setValorIPI(pedido.getValorIPI());
+                    getNotaProduto().setBaseICMS(pedido.getBaseICMS());
+                    getNotaProduto().setValorICMS(pedido.getValorICMS());
+                    getNotaProduto().setBaseICMSST(pedido.getBaseICMSST());
+                    getNotaProduto().setValorICMSST(pedido.getValorICMSST());
+                    getNotaProduto().setValorFrete(pedido.getValorFrete());
+                    getNotaProduto().setValorSeguro(pedido.getValorSeguro());
+                    getNotaProduto().setPrazoPagamento(pedido.getPrazoPagamento());
+                    getNotaProduto().setParcelas(pedido.getParcelas());
+                    getNotaProduto().setValorParcela(pedido.getValorParcela());
+                    getNotaProduto().setCreditoICMS(getNotaProduto().getFilial().getCreditoICMS());
+                    getNotaProduto().setValorTotal(pedido.getValorTotal());
+                    getNotaProduto().setContaBancaria(pedido.getContaBancaria());
+                    getNotaProduto().setFormaPagamento(pedido.getFormaPagamento());
+                    getNotaProduto().setNotaProdutoProdutos(new ArrayList<NotaProdutoProdutos>());
+                    for (PedidoProdutos pedidoProdutos : pedido.getPedidosProdutos()) {
+
+                        NotaProdutoProdutos notaProdutoProdutos = new NotaProdutoProdutos();
+                        notaProdutoProdutos.setProduto(pedidoProdutos.getProduto());
+                        notaProdutoProdutos.setCST(0);
+                        notaProdutoProdutos.setReferencia(pedidoProdutos.getReferencia());
+                        notaProdutoProdutos.setDescricaoProduto(pedidoProdutos.getDescricaoProduto());
+                        notaProdutoProdutos.setUnidade(pedidoProdutos.getUnidade());
+                        notaProdutoProdutos.setQuantidade(pedidoProdutos.getQuantidade());
+                        notaProdutoProdutos.setValorUnitario(pedidoProdutos.getValorUnitario());
+                        notaProdutoProdutos.setValorProduto(pedidoProdutos.getValorProduto());
+                        notaProdutoProdutos.setDesconto(pedidoProdutos.getDesconto());
+                        notaProdutoProdutos.setValorDesconto(pedidoProdutos.getValorDesconto());
+                        notaProdutoProdutos.setMargemIPI(pedidoProdutos.getMargemIPI());
+                        notaProdutoProdutos.setBaseIPI(pedidoProdutos.getBaseIPI());
+                        notaProdutoProdutos.setAliquotaIPI(pedidoProdutos.getAliquotaIPI());
+                        notaProdutoProdutos.setValorIPI(pedidoProdutos.getValorIPI());
+                        notaProdutoProdutos.setMargemICMS(pedidoProdutos.getMargemICMS());
+                        notaProdutoProdutos.setBaseICMS(pedidoProdutos.getBaseICMS());
+                        notaProdutoProdutos.setAliquotaICMS(pedidoProdutos.getAliquotaICMS());
+                        notaProdutoProdutos.setValorICMS(pedidoProdutos.getValorICMS());
+                        notaProdutoProdutos.setMargemICMSST(pedidoProdutos.getMargemICMSST());
+                        notaProdutoProdutos.setBaseICMSST(pedidoProdutos.getBaseICMSST());
+                        notaProdutoProdutos.setAliquotaICMSST(pedidoProdutos.getAliquotaICMSST());
+                        notaProdutoProdutos.setValorICMSST(pedidoProdutos.getValorICMSST());
+                        notaProdutoProdutos.setValorFrete(pedidoProdutos.getValorFrete());
+                        notaProdutoProdutos.setValorSeguro(pedidoProdutos.getValorSeguro());
+                        notaProdutoProdutos.setOutrasDespesas(pedidoProdutos.getOutrasDespesas());
+                        notaProdutoProdutos.setValorTotal(pedidoProdutos.getValorTotal());
+                        notaProdutoProdutos.setNotaProduto(getNotaProduto());
+                        getNotaProduto().getNotaProdutoProdutos().add(notaProdutoProdutos);
+
+                    }
+                    new BaseBean().salvar(getNotaProduto());
+                    if (getNotaProduto().getId() > 0) {
+                        RequestContext.getCurrentInstance().execute("PF('dialog').show();");
+                    }
+                }
+            } 
+            catch (Exception e) {
+
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+
+            }
         }
     }
     //MÉTODO QUE FAZ A CONVERSÃO DE PEDIDO DE VENDA EM NOTA DE SERVICO
     public void pedidoParaNotaServico(){
-        System.out.println(getPedidosSelecionados());
-        try{
-            for(Pedido pedido: getPedidosSelecionados()){
-            
-                notaServico = new NotaServico();
-                getNotaServico().setFilial(pedido.getFilial());
-                List<NotaServico> notasServicos = new NotaServicoBean().getNotasServicos();
-                for(int i = notasServicos.size()-1; i >= 0; i--){            
-                  if(notasServicos.get(i).getFilial().getCnpj().equals(getNotaServico().getFilial().getCnpj())){
-                
-                    getNotaServico().setRps(notasServicos.get(i).getRps() + 1);
-                    getNotaServico().setNotaFiscal(notasServicos.get(i).getNotaFiscal() + 1);
-                  }
-                    
-                }
-                getNotaServico().setDataEmissao(new Date());
-                getNotaServico().setStatus("Digitada");
-                getNotaServico().setEmpresa(pedido.getEmpresa());
-                getNotaServico().setPessoa(pedido.getPessoa());
-                getNotaServico().setDescricao(pedido.getDescricao());
-                getNotaServico().setCep(pedido.getCep());
-                getNotaServico().setEndereco(pedido.getEndereco());
-                getNotaServico().setNumero(pedido.getNumero());
-                getNotaServico().setComplemento(pedido.getComplemento());
-                getNotaServico().setBairro(pedido.getBairro());
-                getNotaServico().setCidade(pedido.getCidade());
-                getNotaServico().setIbge(pedido.getIbge());
-                getNotaServico().setSiafi(pedido.getSiafi());
-                getNotaServico().setEstado(pedido.getEstado());
-                getNotaServico().setPais(pedido.getPais());
-                getNotaServico().setEmail(pedido.getEmail());
-                getNotaServico().setTelefone(pedido.getTelefone());
-                getNotaServico().setCelular(pedido.getCelular());
-                getNotaServico().setValorServicos(pedido.getValorServicos());
-                getNotaServico().setValorDesconto(pedido.getValorDesconto());
-                //IMPOSTOS TOTAIS
-                getNotaServico().setPrazoPagamento(pedido.getPrazoPagamento());
-                getNotaServico().setParcelas(pedido.getParcelas());
-                getNotaServico().setValorParcela(pedido.getValorParcela());
-                getNotaServico().setValorTotal(pedido.getValorTotal());
-                getNotaServico().setContaBancaria(pedido.getContaBancaria());
-                getNotaServico().setFormaPagamento(pedido.getFormaPagamento());
-                getNotaServico().setValorTotal(pedido.getValorTotal());
-                getNotaServico().setNotaServicoServicos(new ArrayList<NotaServicoServicos>());
-                for(PedidoServicos pedidoServicos: pedido.getPedidosServicos()){
-                
-                    NotaServicoServicos notaServicoServicos = new NotaServicoServicos();
-                    notaServicoServicos.setServico(pedidoServicos.getServico());
-                    notaServicoServicos.setDescricaoServico(pedidoServicos.getDescricaoServico());
-                    notaServicoServicos.setUnidade(pedidoServicos.getUnidade());
-                    notaServicoServicos.setQuantidade(pedidoServicos.getQuantidade());
-                    notaServicoServicos.setValorUnitario(pedidoServicos.getValorUnitario());
-                    notaServicoServicos.setValorServico(pedidoServicos.getValorServico());
-                    notaServicoServicos.setDesconto(pedidoServicos.getDesconto());
-                    notaServicoServicos.setValorDesconto(pedidoServicos.getValorDesconto());
-                    notaServicoServicos.setValorTotal(pedidoServicos.getValorTotal());
-                    notaServicoServicos.setNotaServico(getNotaServico());
-                    getNotaServico().getNotaServicoServicos().add(notaServicoServicos);
-                    
-                }
-                new BaseBean().salvar(getNotaServico());
-                
-            }
-            if(getNotaServico().getId() > 0){
-               RequestContext.getCurrentInstance().execute("PF('dialog').show();");
-
-            }
-        }
-        catch(Exception e){
         
-            new Log().salvaErroLog(e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
-
+        if(getPedidosSelecionados().isEmpty()){
+            RequestContext.getCurrentInstance().execute("PF('dialog2').show();");
         }
+        else{
+            try {
+                for (Pedido pedido : getPedidosSelecionados()) {
+
+                    notaServico = new NotaServico();
+                    getNotaServico().setFilial(pedido.getFilial());
+                    List<NotaServico> notasServicos = new NotaServicoBean().getNotasServicos();
+                    for (int i = notasServicos.size() - 1; i >= 0; i--) {
+                        if (notasServicos.get(i).getFilial().getCnpj().equals(getNotaServico().getFilial().getCnpj())) {
+
+                            getNotaServico().setRps(notasServicos.get(i).getRps() + 1);
+                            getNotaServico().setNotaFiscal(notasServicos.get(i).getNotaFiscal() + 1);
+                        }
+
+                    }
+                    getNotaServico().setDataEmissao(new Date());
+                    getNotaServico().setStatus("Digitada");
+                    getNotaServico().setEmpresa(pedido.getEmpresa());
+                    getNotaServico().setPessoa(pedido.getPessoa());
+                    getNotaServico().setDescricao(pedido.getDescricao());
+                    getNotaServico().setCep(pedido.getCep());
+                    getNotaServico().setEndereco(pedido.getEndereco());
+                    getNotaServico().setNumero(pedido.getNumero());
+                    getNotaServico().setComplemento(pedido.getComplemento());
+                    getNotaServico().setBairro(pedido.getBairro());
+                    getNotaServico().setCidade(pedido.getCidade());
+                    getNotaServico().setIbge(pedido.getIbge());
+                    getNotaServico().setSiafi(pedido.getSiafi());
+                    getNotaServico().setEstado(pedido.getEstado());
+                    getNotaServico().setPais(pedido.getPais());
+                    getNotaServico().setEmail(pedido.getEmail());
+                    getNotaServico().setTelefone(pedido.getTelefone());
+                    getNotaServico().setCelular(pedido.getCelular());
+                    getNotaServico().setValorServicos(pedido.getValorServicos());
+                    getNotaServico().setValorDesconto(pedido.getValorDesconto());
+                    //IMPOSTOS TOTAIS
+                    getNotaServico().setPrazoPagamento(pedido.getPrazoPagamento());
+                    getNotaServico().setParcelas(pedido.getParcelas());
+                    getNotaServico().setValorParcela(pedido.getValorParcela());
+                    getNotaServico().setValorTotal(pedido.getValorTotal());
+                    getNotaServico().setContaBancaria(pedido.getContaBancaria());
+                    getNotaServico().setFormaPagamento(pedido.getFormaPagamento());
+                    getNotaServico().setValorTotal(pedido.getValorTotal());
+                    getNotaServico().setNotaServicoServicos(new ArrayList<NotaServicoServicos>());
+                    for (PedidoServicos pedidoServicos : pedido.getPedidosServicos()) {
+
+                        NotaServicoServicos notaServicoServicos = new NotaServicoServicos();
+                        notaServicoServicos.setServico(pedidoServicos.getServico());
+                        notaServicoServicos.setDescricaoServico(pedidoServicos.getDescricaoServico());
+                        notaServicoServicos.setUnidade(pedidoServicos.getUnidade());
+                        notaServicoServicos.setQuantidade(pedidoServicos.getQuantidade());
+                        notaServicoServicos.setValorUnitario(pedidoServicos.getValorUnitario());
+                        notaServicoServicos.setValorServico(pedidoServicos.getValorServico());
+                        notaServicoServicos.setDesconto(pedidoServicos.getDesconto());
+                        notaServicoServicos.setValorDesconto(pedidoServicos.getValorDesconto());
+                        notaServicoServicos.setValorTotal(pedidoServicos.getValorTotal());
+                        notaServicoServicos.setNotaServico(getNotaServico());
+                        getNotaServico().getNotaServicoServicos().add(notaServicoServicos);
+
+                    }
+                    new BaseBean().salvar(getNotaServico());
+
+                }
+                if (getNotaServico().getId() > 0) {
+                    RequestContext.getCurrentInstance().execute("PF('dialog').show();");
+
+                }
+            } 
+            catch (Exception e) {
+
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+
+            }
+        }    
     }
     
     public void atualizarStatusPedido(){
       
-        EntityManager manager = JPAUtil.getEntityManager();
+        EntityManager manager = JPAUtil.getEntityManager(); 
         for(Pedido pedido: getPedidosSelecionados()){
         
             try{
@@ -278,6 +288,19 @@ public class ConversorPedidoNotaBean implements Serializable{
             
                 manager.close();
             }
+        }
+    }
+    
+    //Método que define qual dialog sera aberto, de acordo com o tamanho da lista de pedidos selecionados
+    public void defineDialog(){
+        
+        if(!getPedidosSelecionados().isEmpty()){
+            RequestContext context = RequestContext.getCurrentInstance();
+            context.execute("PF('dialog').show();");
+        } 
+        else {
+            RequestContext context = RequestContext.getCurrentInstance();
+            context.execute("PF('dialog2').show();");
         }
     }
     
