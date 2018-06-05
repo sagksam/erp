@@ -45,7 +45,7 @@ and open the template in the editor.
                         <p:commandButton value="Imprimir" action="#{notaServicoBean.imprimir(notaServicoBean.dadosImpressao(), notaServicoBean.dadosImpressaoProdutos(), notaServicoBean.dadosImpressaoServicos(), notaServicoBean.dadosImpressaoTotais(), 'Notas de Serviço')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
                             <p:fileDownload value="#{baixarArquivoView.arquivo}" />                                                  
                         </p:commandButton>
-                        <p:commandButton value="Solicitar Nota" action="#{notaServicoBean.solicitarNota()}" icon="ui-icon-clipboard" update="status loteAutorizacao dataAutorizacao verificacaoAutorizacao messages"/>
+                        <p:commandButton value="Solicitar Nota" action="#{notaServicoBean.solicitarNota()}" icon="ui-icon-clipboard" update="status loteAutorizacao dataAutorizacao verificacaoAutorizacao panelContas messages"/>
                         <p:dialog header="Cancelar Nota" widgetVar="cancelamentoDialog" focus="motivoCancelamentoDialog">
                             <h:panelGrid columns="2" cellpadding="5">
                                 <h:outputLabel for="motivoCancelamentoDialog" value="Motivo Cancelamento:" />
@@ -240,6 +240,7 @@ and open the template in the editor.
                         <p:panelGrid columns="4">
                             <p:outputLabel for="servicoItem" value="Serviço"/>
                             <p:selectOneMenu id="servicoItem" value="#{notaServicoBean.servico}">
+                                <f:selectItem itemValue="" itemLabel="Lista Serviço"/>
                                 <f:selectItems value="#{servicoBean.servicosVenda}" var="servico"
                                                itemValue="#{servico}" itemLabel="#{servico.descricao}" />  
                                 <p:ajax listener="#{notaServicoBean.selecionarServico()}" event="change" update="unidadeServico"/>

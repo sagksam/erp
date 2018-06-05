@@ -366,7 +366,7 @@ public class NotaServicoBean extends BaseBean implements Serializable {
                 }                
             }
         }
-        if (geraConta) {
+        if (geraConta && getNotaServico().isAtivo()) {
 
             Auditoria auditoria = new Auditoria();
             int parcelas = getNotaServico().getParcelas();

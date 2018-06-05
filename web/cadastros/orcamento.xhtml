@@ -186,7 +186,7 @@ and open the template in the editor.
                                 <f:selectItem itemValue="" itemLabel="Lista Produto"/>
                                 <f:selectItems value="#{produtoBean.produtosVenda}" var="produto"
                                                itemValue="#{produto}" itemLabel="#{produto.descricao}" /> 
-                                <p:ajax listener="#{orcamentoBean.selecionarProduto()}" event="change" update="referenciaProduto"/>
+                                <p:ajax listener="#{orcamentoBean.selecionarProduto()}" event="change" update="referenciaProduto unidadeProduto"/>
                                 <p:message for="produtoItem"/>
                             </p:selectOneMenu>   
                             <p:outputLabel for="referenciaProduto" value="Referência"/>

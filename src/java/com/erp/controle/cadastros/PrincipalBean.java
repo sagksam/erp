@@ -88,6 +88,8 @@ public class PrincipalBean extends BaseBean implements Serializable{
 
     public List<BaseBean> getBasesBeanFerramentas() {
         basesBeanFerramentas.add(new ContaBancariaBean());
+        basesBeanFerramentas.add(new EstoqueEntradaBean());
+        basesBeanFerramentas.add(new EstoqueSaidaBean());
         return basesBeanFerramentas;
     }
 

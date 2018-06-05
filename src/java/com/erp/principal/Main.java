@@ -5,6 +5,10 @@
  */
 package com.erp.principal;
 
+import com.erp.controle.cadastros.EstoqueBean;
+import com.erp.controle.cadastros.EstoqueSaidaBean;
+import com.erp.modelo.cadastros.Estoque;
+
 
 /**
  *
@@ -14,6 +18,10 @@ public class Main {
     
     public static void main(String[] args) throws Exception{
      
+        EstoqueSaidaBean estoque = new EstoqueSaidaBean();
+        for(Estoque e: estoque.getEstoques()){
         
+            System.out.println(e.getId() + " " + e.getTipo());
+        }
     }      
 }

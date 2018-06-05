@@ -249,6 +249,7 @@ public class OrcamentoBean extends BaseBean implements Serializable {
     public void selecionarProduto() {
 
         getOrcamentoProdutos().setReferencia(getProduto().getReferencia());
+        System.out.println("Unidade " + getProduto().getUnidade());
         getOrcamentoProdutos().setUnidade(getProduto().getUnidade());
     }
 

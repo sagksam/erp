@@ -184,9 +184,10 @@ and open the template in the editor.
                         <p:panelGrid columns="8">
                             <p:outputLabel for="produtoItem" value="Produto"/>
                             <p:selectOneMenu id="produtoItem" value="#{pedidoVendaBean.produto}" filter="true" filterMatchMode="startsWith">
+                                <f:selectItem itemValue="" itemLabel="Lista Produto"/>
                                 <f:selectItems value="#{produtoBean.produtosVenda}" var="produto"
                                                itemValue="#{produto}" itemLabel="#{produto.descricao}" /> 
-                                <p:ajax listener="#{pedidoBean.selecionarProduto()}" event="change" update="referenciaProduto"/>
+                                <p:ajax listener="#{pedidoVendaBean.selecionarProduto()}" event="change" update="referenciaProduto unidadeProduto estoqueAtualProduto"/>
                                 <p:message for="produtoItem"/>
                             </p:selectOneMenu>   
                             <p:outputLabel for="referenciaProduto" value="Referência"/>

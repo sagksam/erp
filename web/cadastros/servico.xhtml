@@ -60,6 +60,11 @@ and open the template in the editor.
                                           itemValue="#{operacoes}" itemLabel="#{operacoes.valor}"/>
                             <p:message for="operacoes"/>
                        </p:selectOneMenu>
+                       <p:outputLabel for="unidade" value="Unidade"/>
+                       <p:selectOneMenu id="unidade" value="#{servicoBean.servico.unidade}">
+                           <f:selectItems value="#{listaBean.servicosUnidades}" var="servicoUnidades"
+                                          itemValue="#{servicoUnidades}" itemLabel="#{servicoUnidades.valor}"/>                               
+                       </p:selectOneMenu>
                        <p:outputLabel for="descricao" value="Descrição"/>
                        <p:inputText id="descricao" value="#{servicoBean.servico.descricao}" size="50" required="true" requiredMessage="O campo Descrição é obrigatório.">
                           <p:message for="descricao"/>

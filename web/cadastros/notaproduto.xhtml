@@ -45,7 +45,7 @@ and open the template in the editor.
                         <p:commandButton value="Imprimir" action="#{notaProdutoBean.imprimir(notaProdutoBean.dadosImpressao(), notaProdutoBean.dadosImpressaoProdutos(), notaProdutoBean.dadosImpressaoServicos(), notaProdutoBean.dadosImpressaoTotais(), 'Notas de Produto')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
                             <p:fileDownload value="#{baixarArquivoView.arquivo}" />                          
                         </p:commandButton>
-                        <p:commandButton value="Solicitar Nota" action="#{notaProdutoBean.solicitarNota()}" icon="ui-icon-clipboard" update="status chaveAcesso protocoloAutorizacao dataAutorizacao messages"/>
+                        <p:commandButton value="Solicitar Nota" action="#{notaProdutoBean.solicitarNota()}" icon="ui-icon-clipboard" update="status chaveAcesso protocoloAutorizacao dataAutorizacao panelContas messages"/>
                         <p:commandButton value="Cancelar Nota" onclick="PF('cancelamentoDialog').show();" icon="ui-icon-clipboard"/>
                         <p:dialog header="Cancelar Nota" widgetVar="cancelamentoDialog" focus="motivoCancelamentoDialog">
                             <h:panelGrid columns="2" cellpadding="5">
@@ -246,7 +246,7 @@ and open the template in the editor.
                         <p:panelGrid columns="8">
                             <p:outputLabel for="produtoItem" value="Produto"/>
                             <p:selectOneMenu id="produtoItem" value="#{notaProdutoBean.produto}" filter="true" filterMatchMode="startsWith">
-                                <p:ajax listener="#{notaProdutoBean.selecionarProduto()}" event="change" update="referenciaProduto"/>
+                                <p:ajax listener="#{notaProdutoBean.selecionarProduto()}" event="change" update="referenciaProduto unidadeProduto estoqueAtualProduto"/>
                                 <f:selectItem itemValue="" itemLabel="Lista Produto"/> 
                                 <f:selectItems value="#{produtoBean.produtosVenda}" var="produto"
                                                itemValue="#{produto}" itemLabel="#{produto.descricao}" /> 

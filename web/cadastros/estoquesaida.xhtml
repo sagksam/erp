@@ -1,0 +1,157 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="pt">
+    <h:head>
+        <title>Ferramentas - Saida Produtos</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <div>
+            <ui:insert name="header">
+                <ui:include src="/WEB-INF/templates/header.xhtml"/>
+            </ui:insert>
+        </div>
+        <div class="formPrincipal">
+            <h:outputStylesheet library="css" name="cadastro.css"/>  
+            <h:outputScript library="js" name="script.js"/> 
+            <h:form id="form">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:growl id="messages" showDetail="true" />  
+                        <p:commandButton value="Novo" action="#{estoqueSaidaBean.novo()}" icon="ui-icon-plus" update="@all"/>  
+                        <p:commandButton value="Salvar" action="#{estoqueSaidaBean.salvar(estoqueSaidaBean.estoque)}" icon="ui-icon-disk" update="@all">
+                           <f:actionListener binding="#{contaPagarBean.conta.setTipo('Saída')}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Excluir" action="#{estoqueSaidaBean.excluir(estoqueSaidaBean.estoque)}" icon="ui-icon-trash" update="@all">
+                            <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:dialog modal="true" widgetVar="statusDialog" header="Gerando Impresso..." draggable="false" closable="false" resizable="false">
+                            <p:graphicImage library="imagens" name="ajaxloadingbar.gif" />
+                        </p:dialog>
+                        <p:commandButton value="Imprimir" actionListener="#{estoqueSaidaBean.imprimir(estoqueSaidaBean.dadosImpressao(), estoqueSaidaBean.dadosImpressaoProdutos(), null, null, 'Saida de Produtos')}" onclick="PrimeFaces.monitorDownload(iniciar, parar);"  icon="ui-icon-print" update="messages" ajax="false">
+                            <p:fileDownload value="#{baixarArquivoView.arquivo}" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </f:facet>
+                </p:toolbar>
+                <br/>
+                <p:fieldset id="panelPrincipal" legend="Principal">
+                    <p:panelGrid columns="6" columnClasses="centered" >
+                        <p:outputLabel for="filial" value="Filial"/>
+                        <p:selectOneMenu id="filial" value="#{estoqueSaidaBean.estoque.filial}" required="true" requiredMessage="O campo filial é obrigatório">
+                            <f:selectItems value="#{filialBean.filiais}" var="filial"
+                                           itemValue="#{filial}" itemLabel="#{filial.nome}"/>
+                            <p:message for="filial"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="data" value="Data"/>
+                        <p:calendar id="data" value="#{estoqueSaidaBean.estoque.data}" pattern="dd/MM/yyyy" mask="true" required="true" requiredMessage="O campo Data é obrigatório">
+                            <p:message for="data"/>
+                        </p:calendar>
+                        <p:outputLabel for="motivo" value="Motivo"/>
+                        <p:selectOneMenu id="motivo" value="#{estoqueSaidaBean.estoque.motivo}" required="true" requiredMessage="O campo Motivo é obrigatório">
+                            <f:selectItems value="#{listaBean.estoqueMotivos}" var="motivo"
+                                           itemValue="#{motivo.valor}" itemLabel="#{motivo.valor}" />
+                            <p:message for="motivo"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="responsavel" value="Responsável"/>
+                        <p:selectOneMenu id="responsavel" value="#{estoqueSaidaBean.estoque.responsavel}" required="true" requiredMessage="O campo Responsável é obrigatório">
+                            <f:selectItems value="#{listaBean.estoqueResponsaveis}" var="usuario"
+                                           itemValue="#{usuario.valor}" itemLabel="#{usuario.valor}" />
+                            <p:message for="responsavel"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel for="inventario" value="Inventário"/>
+                        <p:inputText id="inventario" type="integer" value="#{estoqueSaidaBean.estoque.inventario}"/>
+                        <p:outputLabel for="pedido" value="Pedido"/>
+                        <p:inputText id="pedido" type="integer" value="#{estoqueSaidaBean.estoque.pedido}"/>
+                        <p:outputLabel for="notaProduto" value="Nota Produto"/>
+                        <p:inputText id="notaProduto" type="integer" value="#{estoqueSaidaBean.estoque.notaProduto}"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:commandButton ajax="true" update=":form:estoqueProdutoDialog" oncomplete="PF('produtoDialog').show(); calcularItensEstoqueVenda()" icon="ui-icon-plus" title="View"/>
+                <p:dataTable id="tabelaProduto" value="#{estoqueSaidaBean.estoque.estoqueProdutos}" var="estoqueProdutos">                   
+                    <p:column headerText="Referência">
+                        <h:outputText value="#{estoqueProdutos.referencia}"/>
+                    </p:column>
+                    <p:column headerText="Produto">
+                        <h:outputText value="#{estoqueProdutos.descricao}"/>
+                    </p:column>
+                    <p:column headerText="Unidade">
+                        <h:outputText value="#{estoqueProdutos.unidade}"/>
+                    </p:column>
+                    <p:column headerText="Estoque">
+                        <h:outputText value="#{estoqueProdutos.estoqueAtual}"/>
+                    </p:column>
+                    <p:column headerText="Quantidade">
+                        <h:outputText value="#{estoqueProdutos.quantidade}"/>
+                    </p:column>
+                    <p:column headerText="Saldo">
+                        <h:outputText value="#{estoqueProdutos.saldo}"/>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <p:commandButton actionListener="#{estoqueSaidaBean.removeProduto(estoqueProdutos)}" icon="ui-icon-trash" update="tabelaProduto @form"/>
+                        <p:commandButton update=":form:estoqueProdutoDialog" oncomplete="PF('produtoDialog').show();calcularItensEstoqueVenda()" icon="ui-icon-search"  action="#{estoqueSaidaBean.setModoEdicao(true)}">
+                            <f:setPropertyActionListener value="#{estoqueProdutos}" target="#{estoqueSaidaBean.estoqueProdutos}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:dialog header="Produtos" widgetVar="produtoDialog" modal="true" showEffect="explode" hideEffect="explode" resizable="false">
+                    <p:outputPanel id="estoqueProdutoDialog">
+                        <p:panelGrid columns="8">
+                            <p:outputLabel for="produtoItem" value="Produto"/>
+                            <p:selectOneMenu id="produtoItem" value="#{estoqueSaidaBean.produto}" filter="true" filterMatchMode="startsWith">
+                                <f:selectItem itemValue="" itemLabel="Lista Produto"/>
+                                <f:selectItems value="#{produtoBean.produtosVenda}" var="produto"
+                                               itemValue="#{produto}" itemLabel="#{produto.descricao}" /> 
+                                <p:ajax listener="#{estoqueSaidaBean.selecionarProduto()}" event="change" update="referenciaProduto unidadeProduto estoqueAtualProduto"/>
+                                <p:message for="produtoItem"/>
+                            </p:selectOneMenu>   
+                            <p:outputLabel for="referenciaProduto" value="Referência"/>
+                            <p:inputText id="referenciaProduto" value="#{estoqueSaidaBean.estoqueProdutos.referencia}">                       
+                                <p:message for="referenciaProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="unidadeProduto" value="Unidade"/>
+                            <p:inputText id="unidadeProduto" value="#{estoqueSaidaBean.estoqueProdutos.unidade}">                       
+                                <p:message for="unidadeProduto"/>
+                            </p:inputText>                        
+                            <p:outputLabel for="estoqueAtualProduto" value="Estoque Atual"/>
+                            <p:inputText id="estoqueAtualProduto" type="integer" value="#{estoqueSaidaBean.estoqueProdutos.estoqueAtual}" required="true" requiredMessage="O campo Estoque atual é obrigatório.">                       
+                                <p:message for="estoqueAtualProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="quantidadeProduto" value="Quantidade"/>
+                            <p:inputText id="quantidadeProduto" type="integer" value="#{estoqueSaidaBean.estoqueProdutos.quantidade}" required="true" requiredMessage="O campo Quantidade é obrigatório.">                       
+                                <p:message for="quantidadeProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="saldoProduto" value="Saldo"/>
+                            <p:inputText id="saldoProduto" type="integer" value="#{estoqueSaidaBean.estoqueProdutos.saldo}" required="true" requiredMessage="O campo Saldo é obrigatório.">                       
+                                <p:message for="saldoProduto"/>
+                            </p:inputText>
+                            <p:outputLabel for="valorUnitarioProduto" value="Valor Unitário"/>
+                            <p:inputNumber id="valorUnitarioProduto" value="#{estoqueSaidaBean.estoqueProdutos.valorUnitario}" symbolPosition="s" emptyValue="" minValue="0.00"  required="true" requiredMessage="O campo Valor Unitário é obrigatório">
+                                <p:message for="valorUnitarioProduto"/>
+                            </p:inputNumber>                      
+                            <p:outputLabel for="valorTotalProduto" value="Valor Total"/>
+                            <p:inputNumber id='valorTotalProduto' value="#{estoqueSaidaBean.estoqueProdutos.valorTotal}" symbolPosition="s" emptyValue="" minValue="0.00" required="true" requiredMessage="O campo Valor Total é obrigatório">
+                                <p:message for="valorTotalProduto"/>
+                            </p:inputNumber>
+                            <p:commandButton value="Add" actionListener="#{estoqueSaidaBean.addProduto()}" update="@form" oncomplete="calcularItensEstoqueVenda()"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:dialog>
+                <p:fieldset id="panelDadosAdicionais" legend="Dados Adicionais">
+                    <p:panelGrid columns="2" class="centered">                       
+                        <p:outputLabel for="detalhes" value="Detalhes"/>
+                        <p:inputTextarea id="detalhes" rows="6" cols="33" value="#{estoqueSaidaBean.estoque.detalhes}"/>
+                    </p:panelGrid>
+                </p:fieldset>
+                <p:outputLabel class="auditoria" value="#{estoqueSaidaBean.exibirAuditoria(estoqueSaidaBean.estoque)}"/>  
+            </h:form>
+        </div>
+    </h:body>
+</html>

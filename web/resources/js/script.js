@@ -121,6 +121,30 @@ function calcularValoresProduto(){
 
 }
 
+function calcularItensEstoqueCompra(){
+    
+    var estoqueAtualItem = parseFloat($('#form\\:estoqueAtualProduto').val());
+    var quantidadeItem = parseFloat($('#form\\:quantidadeProduto').val());
+    var saldoItem = 0;
+      saldoItem = quantidadeItem + estoqueAtualItem;
+    $('#form\\:saldoProduto').val(saldoItem);
+    $('#form\\:estoqueAtualProduto, #form\\:quantidadeProduto').change(function(){
+       calcularItensEstoqueCompra(); 
+    });
+}
+
+function calcularItensEstoqueVenda(){
+    
+    var estoqueAtualItem = parseFloat($('#form\\:estoqueAtualProduto').val());
+    var quantidadeItem = parseFloat($('#form\\:quantidadeProduto').val());
+    var saldoItem = 0;
+      saldoItem = quantidadeItem - estoqueAtualItem;
+    $('#form\\:saldoProduto').val(saldoItem);
+    $('#form\\:estoqueAtualProduto, #form\\:quantidadeProduto').change(function(){
+       calcularItensEstoqueVenda(); 
+    });
+}
+
 function iniciar() {
     PF('statusDialog').show();
 }

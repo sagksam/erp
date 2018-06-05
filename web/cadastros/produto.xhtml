@@ -63,7 +63,10 @@ and open the template in the editor.
                         <p:outputLabel for="referencia" value="Referência"/>
                         <p:inputText id="referencia" value="#{produtoBean.produto.referencia}"/> 
                         <p:outputLabel for="unidade" value="Unidade"/>
-                        <p:inputText id="unidade" value="#{produtoBean.produto.unidade}"/> 
+                        <p:selectOneMenu id="unidade" value="#{produtoBean.produto.unidade}">
+                            <f:selectItems value="#{listaBean.produtosUnidades}" var="produtoUnidades"
+                                           itemValue="#{produtosUnidades}" itemLabel="#{produtosUnidades.valor}"/>                               
+                        </p:selectOneMenu>
                         <p:outputLabel for="descricao" value="Descrição"/>
                         <p:inputText size="50" id="descricao" value="#{produtoBean.produto.descricao}" required="true" requiredMessage="O campo Descrição é obrigatório.">
                           <p:message for="descricao"/>

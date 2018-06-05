@@ -311,19 +311,21 @@ public class Lista {
     
     public enum CadastroStatus {
     
-        PENDENTE("Pendente", false),
-        FATURADO("Faturado", false),
-        ENTREGUE("Entregue", true),
-        CONCLUIDO("Concluído", false),
-        CANCELADO("Cancelado", false);
+        PENDENTE("Pendente", false, false),
+        FATURADO("Faturado", false, false),
+        ENTREGUE("Entregue", true, true),
+        CONCLUIDO("Concluído", false, true),
+        CANCELADO("Cancelado", false, false);
         
         private String valor;
         private boolean geraConta;   
+        private boolean geraMovimentacaoEstoque;
         
-        private CadastroStatus(String valor, boolean geraConta){
+        private CadastroStatus(String valor, boolean geraConta, boolean geraMovimentacaoEstoque){
         
             this.valor = valor;
             this.geraConta = geraConta;
+            this.geraMovimentacaoEstoque = geraMovimentacaoEstoque;
         }
         
         public String getValor(){
@@ -333,6 +335,10 @@ public class Lista {
 
         public boolean isGeraConta() {
             return geraConta;
+        }
+
+        public boolean isGeraMovimentacaoEstoque() {
+            return geraMovimentacaoEstoque;
         }
 
     }
@@ -461,17 +467,19 @@ public class Lista {
     
     public enum NotaProdutoStatus{
     
-        DIGITADA("Digitada", false),
-        AUTORIZADA("Autorizada", true),
-        CANCELADA("Cancelada", false);
+        DIGITADA("Digitada", false, false),
+        AUTORIZADA("Autorizada", true, true),
+        CANCELADA("Cancelada", false, false);
         
         private String valor;
         private boolean geraConta;
+        private boolean geraMovimentacaoEstoque;
         
-        private NotaProdutoStatus(String valor, boolean geraConta){
+        private NotaProdutoStatus(String valor, boolean geraConta, boolean geraMovimentacaoEstoque){
         
             this.valor = valor;
             this.geraConta = geraConta;
+            this.geraMovimentacaoEstoque = geraMovimentacaoEstoque;
             
         }
 
@@ -481,6 +489,10 @@ public class Lista {
 
         public boolean isGeraConta() {
             return geraConta;
+        }
+        
+        public boolean isGeraMovimentacaoEstoque(){
+            return geraMovimentacaoEstoque; 
         }
  
     }
@@ -514,7 +526,86 @@ public class Lista {
  
     }
     
+    public enum ProdutoUnidade{
     
+        CX("CX"),
+        FR("FR"),
+        GL("GL"),
+        KG("KG"),
+        PC("PC"),
+        UN("UN");
+        
+        public String valor;
+        
+        private ProdutoUnidade(String valor){
+        
+            this.valor = valor;
+            
+        }
+
+        public String getValor() {
+            return valor;
+        }
+    }
+    
+     public enum ServicoUnidade{
+    
+        HORA("Hora"),
+        DIA("Dia"),
+        MES("Mês"),
+        ANO("Ano");
+        
+        public String valor;
+        
+        private ServicoUnidade(String valor){
+        
+            this.valor = valor;
+            
+        }
+
+        public String getValor() {
+            return valor;
+        }
+    
+    }
+     
+    public enum EstoqueMotivo{
+    
+        COMPRA("Compra"),
+        VENDA("Venda"),
+        INVENTARIO("Inventário"),
+        AJUSTE("Ajuste");
+        
+        public String valor;
+        
+        private EstoqueMotivo(String valor){
+        
+            this.valor = valor;
+        }
+
+        public String getValor() {
+            return valor;
+        }
+
+    }
+    
+    public enum EstoqueResponsavel{
+    
+        JOSE("José"),
+        MARIA("Maria");
+        
+        public String valor;
+        
+        private EstoqueResponsavel(String valor){
+        
+            this.valor = valor;
+        }
+
+        public String getValor() {
+            return valor;
+        }
+
+    }
     
 
 }

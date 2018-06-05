@@ -14,6 +14,8 @@ import com.erp.modelo.classes.comuns.Lista.ContaStatus;
 import com.erp.modelo.classes.comuns.Lista.Departamento;
 import com.erp.modelo.classes.comuns.Lista.Escolaridade;
 import com.erp.modelo.classes.comuns.Lista.Estado;
+import com.erp.modelo.classes.comuns.Lista.EstoqueMotivo;
+import com.erp.modelo.classes.comuns.Lista.EstoqueResponsavel;
 import com.erp.modelo.classes.comuns.Lista.FormaPagamento;
 import com.erp.modelo.classes.comuns.Lista.Moeda;
 import com.erp.modelo.classes.comuns.Lista.NotaProdutoStatus;
@@ -24,6 +26,8 @@ import com.erp.modelo.classes.comuns.Lista.PadraoConta;
 import com.erp.modelo.classes.comuns.Lista.PrazoPagamento;
 import com.erp.modelo.classes.comuns.Lista.ProdutoOperacao;
 import com.erp.modelo.classes.comuns.Lista.ProdutoStatus;
+import com.erp.modelo.classes.comuns.Lista.ProdutoUnidade;
+import com.erp.modelo.classes.comuns.Lista.ServicoUnidade;
 import com.erp.modelo.classes.comuns.Lista.Sexo;
 import com.erp.modelo.classes.comuns.Lista.Tipo;
 import com.erp.modelo.classes.comuns.Lista.Vendedor;
@@ -259,6 +263,29 @@ public class ListaBean {
                 return "Cancelada";          
         }
         return valor;
+    }
+    //Método que retorna uma lista com as unidades comerciais dos produtos
+    public ProdutoUnidade[] getProdutosUnidades(){
+    
+        return ProdutoUnidade.values();
+    }
+    
+    //Método que retorna uma lista com as unidades comerciais dos servicos
+    public ServicoUnidade[] getServicosUnidades(){
+    
+        return ServicoUnidade.values();
+    }
+    
+    //Método que retorna uma lista com os motivos para a movimentacao de estoque
+    public EstoqueMotivo[] getEstoqueMotivos(){
+    
+        return EstoqueMotivo.values();
+    }
+    
+    //Método que retorna uma lista com os responsaveis para a movimentacao de estoque
+    public EstoqueResponsavel[] getEstoqueResponsaveis(){
+    
+        return EstoqueResponsavel.values();
     }
 
 }

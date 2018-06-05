@@ -266,6 +266,7 @@ public class BaseBean implements Serializable {
             try {
                 getDao().save(entidadeBase);
                 geraConta();
+                geraMovimentacaoEstoque();
             } 
             catch (Exception e) {
                 new Log().salvaErroLog(e);
@@ -281,6 +282,7 @@ public class BaseBean implements Serializable {
             try {
                 getDao().update(entidadeBase);
                 geraConta();
+                geraMovimentacaoEstoque();
                 if (!entidadeBase.isAtivo()) {
                    novo();
                 }
@@ -367,6 +369,13 @@ public class BaseBean implements Serializable {
 
         return false;
     }
+    
+    //Método que indica se a entidade base deve ou não criar uma movimentação do estoque
+    public boolean geraMovimentacaoEstoque(){
+    
+        return false;
+    }
+    
     //Método que retorna os dados que serão exibidos no impresso 
     public Map<String, Object> dadosImpressao(){
     
