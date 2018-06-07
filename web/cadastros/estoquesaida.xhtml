@@ -23,7 +23,7 @@
                         <p:growl id="messages" showDetail="true" />  
                         <p:commandButton value="Novo" action="#{estoqueSaidaBean.novo()}" icon="ui-icon-plus" update="@all"/>  
                         <p:commandButton value="Salvar" action="#{estoqueSaidaBean.salvar(estoqueSaidaBean.estoque)}" icon="ui-icon-disk" update="@all">
-                           <f:actionListener binding="#{contaPagarBean.conta.setTipo('Saída')}"/>
+                           <f:actionListener binding="#{estoqueSaidaBean.estoque.setTipo('Saída')}"/>
                         </p:commandButton>
                         <p:commandButton value="Excluir" action="#{estoqueSaidaBean.excluir(estoqueSaidaBean.estoque)}" icon="ui-icon-trash" update="@all">
                             <p:confirm header="Confirmação" message="Tem certeza que deseja excluir o registro?" icon="ui-icon-alert" />

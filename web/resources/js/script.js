@@ -125,10 +125,14 @@ function calcularItensEstoqueCompra(){
     
     var estoqueAtualItem = parseFloat($('#form\\:estoqueAtualProduto').val());
     var quantidadeItem = parseFloat($('#form\\:quantidadeProduto').val());
+    var valorUnitarioItem =  parseFloat($('#form\\:valorUnitarioProduto_input').val());
     var saldoItem = 0;
-      saldoItem = quantidadeItem + estoqueAtualItem;
+    var valorTotalItem = 0;
+    saldoItem = quantidadeItem + estoqueAtualItem;
+    valorTotalItem = quantidadeItem * valorUnitarioItem;
     $('#form\\:saldoProduto').val(saldoItem);
-    $('#form\\:estoqueAtualProduto, #form\\:quantidadeProduto').change(function(){
+    $('#form\\:valorTotalProduto_input').val(valorTotalItem.toLocaleString('pt-br', {minimumFractionDigits: 2}).toString());
+    $('#form\\:estoqueAtualProduto, #form\\:quantidadeProduto, #form\\:valorUnitarioProduto').change(function(){
        calcularItensEstoqueCompra(); 
     });
 }
@@ -137,10 +141,14 @@ function calcularItensEstoqueVenda(){
     
     var estoqueAtualItem = parseFloat($('#form\\:estoqueAtualProduto').val());
     var quantidadeItem = parseFloat($('#form\\:quantidadeProduto').val());
+    var valorUnitarioItem =  parseFloat($('#form\\:valorUnitarioProduto_input').val());
     var saldoItem = 0;
-      saldoItem = quantidadeItem - estoqueAtualItem;
+    var valorTotalItem = 0;
+    saldoItem = estoqueAtualItem - quantidadeItem;
+    valorTotalItem = quantidadeItem * valorUnitarioItem;
     $('#form\\:saldoProduto').val(saldoItem);
-    $('#form\\:estoqueAtualProduto, #form\\:quantidadeProduto').change(function(){
+    $('#form\\:valorTotalProduto_input').val(valorTotalItem.toLocaleString('pt-br', {minimumFractionDigits: 2}).toString());
+    $('#form\\:estoqueAtualProduto, #form\\:quantidadeProduto, #form\\:valorUnitarioProduto').change(function(){
        calcularItensEstoqueVenda(); 
     });
 }

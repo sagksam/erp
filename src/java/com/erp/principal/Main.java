@@ -7,7 +7,14 @@ package com.erp.principal;
 
 import com.erp.controle.cadastros.EstoqueBean;
 import com.erp.controle.cadastros.EstoqueSaidaBean;
+import com.erp.controle.cadastros.InventarioBean;
+import com.erp.controle.cadastros.ProdutoBean;
+import com.erp.controle.relatorios.RelatorioProdutoBean;
 import com.erp.modelo.cadastros.Estoque;
+import com.erp.modelo.cadastros.Inventario;
+import com.erp.modelo.cadastros.Produto;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -18,10 +25,12 @@ public class Main {
     
     public static void main(String[] args) throws Exception{
      
-        EstoqueSaidaBean estoque = new EstoqueSaidaBean();
-        for(Estoque e: estoque.getEstoques()){
+        RelatorioProdutoBean bean = new RelatorioProdutoBean();
+        bean.configurarFiltros();
+        System.out.println(bean.getProdutos().size());
+        /*for(Produto produtoTotal: new ProdutoBean().getProdutos()){
         
-            System.out.println(e.getId() + " " + e.getTipo());
-        }
+            System.out.println(produtoTotal.getDescricao());
+        } */
     }      
 }

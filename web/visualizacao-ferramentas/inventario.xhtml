@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
-        <title>Saída de Produtos</title>
+        <title>Inventário de Produtos</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </h:head>
     <h:body>
@@ -26,27 +26,27 @@ and open the template in the editor.
             <p:toolbar>
                     <f:facet name="left">
                         <p:growl id="messages" showDetail="true" />  
-                        <p:commandButton value="Inserir Novo" action="#{estoqueSaidaBean.novo()}" icon="ui-icon-plus" update="@all"/>                          
+                        <p:commandButton value="Inserir Novo" action="#{inventarioBean.novo()}" icon="ui-icon-plus" update="@all"/>                          
                     </f:facet>
             </p:toolbar>          
-            <p:carousel value="#{estoqueSaidaBean.estoques}" headerText="Saidas de Produtos" var="estoqueSaida" itemStyle="text-align:center" responsive="true">
+            <p:carousel value="#{inventarioBean.inventarios}" headerText="Inventário de Produtos" var="inventario" itemStyle="text-align:center" responsive="true">
             <h:panelGrid columns="2" columnClasses="label,value" styleClass="ui-panelgrid-blank">
                 <h:outputText value="ID:"/>
-                <h:outputText value="#{estoqueSaida.id}"/>                
-                <h:outputText value="Responsável"/>
-                <h:outputText value="#{estoqueSaida.data}">
+                <h:outputText value="#{inventario.id}"/>                
+                <h:outputText value="Data"/>
+                <h:outputText value="#{inventario.data}">
                      <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
                 </h:outputText>
-                <h:outputText value="Descrição Conta:"/>
-                <h:outputText value="#{estoqueSaida.responsavel}"/>
+                <h:outputText value="Responsável:"/>
+                <h:outputText value="#{inventario.responsavel}"/>
                 <f:facet name="footer">
-                    <p:commandButton action="#{estoqueSaidaBean.editarRegistro()}" icon="ui-icon-search">
-                        <f:setPropertyActionListener value="#{estoqueSaida}" target="#{estoqueSaidaBean.estoque}" />
+                    <p:commandButton action="#{inventarioBean.editarRegistro()}" icon="ui-icon-search">
+                        <f:setPropertyActionListener value="#{inventario}" target="#{inventarioBean.inventario}" />
                     </p:commandButton>
                 </f:facet>
             </h:panelGrid>  
             <f:facet name="footer">
-                Foram encontrados #{estoqueSaidaBean.estoques.size()} Saídas de produtos.
+                Foram encontrados #{inventarioBean.inventarios.size()} inventários de produtos.
             </f:facet>   
             </p:carousel>
         </h:form>

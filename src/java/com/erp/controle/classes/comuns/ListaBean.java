@@ -5,6 +5,7 @@
  */
 package com.erp.controle.classes.comuns;
 
+import com.erp.modelo.classes.comuns.Lista;
 import com.erp.modelo.classes.comuns.Lista.Atividade;
 import com.erp.modelo.classes.comuns.Lista.CFOP;
 import com.erp.modelo.classes.comuns.Lista.CadastroStatus;
@@ -17,6 +18,8 @@ import com.erp.modelo.classes.comuns.Lista.Estado;
 import com.erp.modelo.classes.comuns.Lista.EstoqueMotivo;
 import com.erp.modelo.classes.comuns.Lista.EstoqueResponsavel;
 import com.erp.modelo.classes.comuns.Lista.FormaPagamento;
+import com.erp.modelo.classes.comuns.Lista.InventarioMotivo;
+import com.erp.modelo.classes.comuns.Lista.InventarioResponsavel;
 import com.erp.modelo.classes.comuns.Lista.Moeda;
 import com.erp.modelo.classes.comuns.Lista.NotaProdutoStatus;
 import com.erp.modelo.classes.comuns.Lista.NotaServicoStatus;
@@ -286,6 +289,18 @@ public class ListaBean {
     public EstoqueResponsavel[] getEstoqueResponsaveis(){
     
         return EstoqueResponsavel.values();
+    }
+    
+    //Método que returna uma lsita com os motivos para o inventário
+    public InventarioMotivo[] getInventarioMotivos(){
+    
+        return InventarioMotivo.values();
+    }
+    
+    //Método que retorna uma lista com os responsáveis para o inventário
+    public InventarioResponsavel[] getInventarioResponsaveis(){
+    
+        return InventarioResponsavel.values();
     }
 
 }

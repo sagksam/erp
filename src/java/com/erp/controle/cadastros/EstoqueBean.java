@@ -5,12 +5,10 @@
  */
 package com.erp.controle.cadastros;
 
-import com.erp.acesso.dados.GenericDAO;
 import com.erp.controle.classes.comuns.BaseBean;
 import com.erp.modelo.cadastros.Estoque;
 import com.erp.modelo.cadastros.EstoqueProdutos;
 import com.erp.modelo.cadastros.Produto;
-import com.erp.modelo.classes.comuns.Auditoria;
 import com.erp.util.Conversores;
 import com.erp.util.Log;
 import java.io.Serializable;

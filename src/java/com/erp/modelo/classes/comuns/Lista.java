@@ -607,5 +607,41 @@ public class Lista {
 
     }
     
+    public enum InventarioMotivo{
+    
+        AUDITORIA("Auditoria"),
+        CORRECAO_PONTUAL("Correção Pontual");
+        
+        public String valor;
+        
+        private InventarioMotivo(String valor){
+        
+            this.valor = valor;
+        }
+
+        public String getValor() {
+            return valor;
+        }
+
+    }
+    
+    public enum InventarioResponsavel{
+    
+        JOSE("José"),
+        MARIA("Maria");
+        
+        public String valor;
+        
+        private InventarioResponsavel(String valor){
+        
+            this.valor = valor;
+        }
+
+        public String getValor() {
+            return valor;
+        }
+
+    }
+    
 
 }

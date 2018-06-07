@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
-        <title>Contas Bancárias</title>
+        <title>Entrada de Produtos</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </h:head>
     <h:body>
@@ -34,7 +34,9 @@ and open the template in the editor.
                 <h:outputText value="ID:"/>
                 <h:outputText value="#{estoqueEntrada.id}"/>                
                 <h:outputText value="Responsável"/>
-                <h:outputText value="#{estoqueEntrada.data}"/>                
+                <h:outputText value="#{estoqueEntrada.data}">
+                     <f:convertDateTime type="date" pattern="dd/MM/YYYY"/>
+                </h:outputText>
                 <h:outputText value="Descrição Conta:"/>
                 <h:outputText value="#{estoqueEntrada.responsavel}"/>
                 <f:facet name="footer">
