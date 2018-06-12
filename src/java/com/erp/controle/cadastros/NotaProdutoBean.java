@@ -25,7 +25,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import com.erp.modelo.classes.comuns.Auditoria;
 import com.erp.modelo.classes.comuns.Lista.NotaProdutoStatus;
 import com.erp.util.Conversores;
 import com.erp.util.Log;
@@ -415,13 +414,8 @@ public class NotaProdutoBean extends BaseBean implements Serializable{
               conta.setDataVencimento(datas[i-1]);
               conta.setDataLimite(datas[i-1]);
               conta.setValorPrevisto(valorParcela);
-              conta.setDataPagamento(null);
-              Auditoria auditoria = new Auditoria();
-              auditoria.setCriacaoUsuario(new BaseBean().getUsuario());
-              auditoria.setCriacaoData(new Date());
-              auditoria.setAlteracaoData(new Date());
-              auditoria.setAlteracaoUsuario(new BaseBean().getUsuario());
-              conta.setAuditoria(auditoria);
+              conta.setDataPagamento(null);             
+              conta.setAuditoria(getAuditoria(conta));
               try{
                 new GenericDAO().save(conta);
               }
@@ -475,7 +469,6 @@ public class NotaProdutoBean extends BaseBean implements Serializable{
         /*GERANDO A MOVIMENTAÇÃO*/
         if(geraMovimentacao && getNotaProduto().isAtivo()){
             
-            Auditoria auditoria = new Auditoria();
             Estoque estoque = new Estoque();
             estoque.setAtivo(true);
             estoque.setTipo("Saída");
@@ -485,12 +478,8 @@ public class NotaProdutoBean extends BaseBean implements Serializable{
             estoque.setResponsavel(getNotaProduto().getAuditoria().getAlteracaoUsuario().getNome());
             estoque.setInventario(0);
             estoque.setPedido(0);
-            estoque.setNotaProduto(getNotaProduto().getId());
-            auditoria.setCriacaoUsuario(new BaseBean().getUsuario());
-            auditoria.setCriacaoData(new Date());
-            auditoria.setAlteracaoData(new Date());
-            auditoria.setAlteracaoUsuario(new BaseBean().getUsuario());
-            estoque.setAuditoria(auditoria);
+            estoque.setNotaProduto(getNotaProduto().getId());          
+            estoque.setAuditoria(getAuditoria(estoque));
             try {
                 getDao().save(estoque);
             } 

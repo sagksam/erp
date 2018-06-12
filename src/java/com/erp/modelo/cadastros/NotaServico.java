@@ -38,7 +38,7 @@ public class NotaServico extends VendaBase implements Serializable{
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dataCancelamento;
     private String verificacaoCancelamento;
-    @OneToMany(mappedBy="notaServico", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="notaServico", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
     private List<NotaServicoServicos> notaServicoServicos;
     private double baseISSQN;
     private double aliquotaISSQN;

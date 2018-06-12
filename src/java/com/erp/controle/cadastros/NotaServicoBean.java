@@ -368,7 +368,6 @@ public class NotaServicoBean extends BaseBean implements Serializable {
         }
         if (geraConta && getNotaServico().isAtivo()) {
 
-            Auditoria auditoria = new Auditoria();
             int parcelas = getNotaServico().getParcelas();
             Date[] datas = new Prazos().prazosDatas(getNotaServico().getDataEmissao(), getNotaServico().getPrazoPagamento(), parcelas);
             for (int i = 1; i <= parcelas; i++) {
@@ -390,12 +389,8 @@ public class NotaServicoBean extends BaseBean implements Serializable {
                 conta.setDataVencimento(datas[i - 1]);
                 conta.setDataLimite(datas[i - 1]);
                 conta.setValorPrevisto(getNotaServico().getValorParcela());
-                conta.setDataPagamento(null);
-                auditoria.setCriacaoUsuario(new BaseBean().getUsuario());
-                auditoria.setCriacaoData(new Date());
-                auditoria.setAlteracaoData(new Date());
-                auditoria.setAlteracaoUsuario(new BaseBean().getUsuario());
-                conta.setAuditoria(auditoria);
+                conta.setDataPagamento(null);               
+                conta.setAuditoria(getAuditoria(conta));
                 try {
                     new GenericDAO().save(conta);
                 } catch (Exception e) {

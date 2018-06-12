@@ -38,7 +38,7 @@ public class Inventario extends EntidadeBase implements Serializable{
     private String responsavel;
     private boolean aplicado;
     private String detalhes;
-    @OneToMany(mappedBy="inventario", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="inventario", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
     private List<InventarioProdutos> inventarioProdutos;
 
     public Inventario() {

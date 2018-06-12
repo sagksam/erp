@@ -11,18 +11,14 @@ import com.erp.modelo.cadastros.EstoqueProdutos;
 import com.erp.modelo.cadastros.Inventario;
 import com.erp.modelo.cadastros.InventarioProdutos;
 import com.erp.modelo.cadastros.Produto;
-import com.erp.modelo.classes.comuns.Auditoria;
 import com.erp.util.Conversores;
 import com.erp.util.JPAUtil;
 import com.erp.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -166,15 +162,48 @@ public class InventarioBean extends BaseBean implements Serializable{
     @Override
     public boolean geraMovimentacaoEstoque(){
     
+        List<Estoque> estoques = new ArrayList<>(new EstoqueEntradaBean().getEstoques());
+        estoques.addAll(new EstoqueSaidaBean().getEstoques());
         boolean geraMovimentacao = getInventario().isAplicado();
         Produto produto;
-        if(geraMovimentacao){
-            
+        double estoqueAtual;
+        double quantidade;
+        
+        //DELETANDO A MOVIMENTAÇÃO
+        for(Estoque estoque: estoques){
+        
+            if(estoque.getInventario() == getInventario().getId() && estoque.isAtivo()){
+                estoque.setAtivo(false);
+                for(EstoqueProdutos estoqueProdutos: estoque.getEstoqueProdutos()){
+                
+                    if(estoqueProdutos.getProduto().isControleEstoque()){
+                    
+                        produto = getDao().findById(estoqueProdutos.getProduto().getId(), Produto.class);
+                        if(estoque.getTipo().equals("Entrada"))
+                          produto.setEstoqueAtual(produto.getEstoqueAtual() - estoqueProdutos.getSaldo());
+                        else
+                          produto.setEstoqueAtual(produto.getEstoqueAtual() + estoqueProdutos.getSaldo());  
+                        try {
+                            getDao().update(produto);
+                        } catch (Exception e) {
+
+                            new Log().salvaErroLog(e);
+                            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+                        }
+                    }
+                }
+                try {
+                    getDao().update(estoque);
+                } catch (Exception e) {
+                    new Log().salvaErroLog(e);
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+                }
+            }
+        }
+        //GERANDO A MOVIMENTACAO
+        if(geraMovimentacao && getInventario().isAtivo()){
+
             Estoque estoqueEntrada = new Estoque();
-            boolean entrada = false;
-            Estoque estoqueSaida;
-            boolean saida = false;
-            Auditoria auditoria = new Auditoria();
             estoqueEntrada.setAtivo(true);
             estoqueEntrada.setTipo("Entrada");
             estoqueEntrada.setFilial(getInventario().getFilial());
@@ -183,72 +212,52 @@ public class InventarioBean extends BaseBean implements Serializable{
             estoqueEntrada.setInventario(getInventario().getId());
             estoqueEntrada.setPedido(0);
             estoqueEntrada.setNotaProduto(0);
-            auditoria.setCriacaoUsuario(new BaseBean().getUsuario());
-            auditoria.setCriacaoData(new Date());
-            auditoria.setAlteracaoData(new Date());
-            auditoria.setAlteracaoUsuario(new BaseBean().getUsuario());
-            estoqueEntrada.setAuditoria(auditoria);
-            estoqueSaida = estoqueEntrada;
+            estoqueEntrada.setAuditoria(getAuditoria(estoqueEntrada));
+
+            Estoque estoqueSaida = new Estoque();
+            estoqueSaida.setAtivo(true);
             estoqueSaida.setTipo("Saída");
+            estoqueSaida.setFilial(getInventario().getFilial());
+            estoqueSaida.setData(getInventario().getData());
+            estoqueSaida.setResponsavel(getInventario().getResponsavel());
+            estoqueSaida.setInventario(getInventario().getId());
+            estoqueSaida.setPedido(0);
+            estoqueSaida.setNotaProduto(0);
+            estoqueSaida.setAuditoria(getAuditoria(estoqueSaida));
+            try {
+                getDao().save(estoqueSaida);
+                getDao().save(estoqueEntrada);
+            } 
+            catch (Exception e) {
+
+                new Log().salvaErroLog(e);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+            }
             
             for(InventarioProdutos inventarioProduto: getInventario().getInventarioProdutos()){
-            
                 if(inventarioProduto.getProduto().isControleEstoque()){
                     EstoqueProdutos estoqueProdutos = new EstoqueProdutos();
                     produto = getDao().findById(inventarioProduto.getProduto().getId(), Produto.class);
-                    double estoqueAtual = produto.getEstoqueAtual();
+                    estoqueAtual = produto.getEstoqueAtual();
                     estoqueProdutos.setAtivo(true);
                     estoqueProdutos.setProduto(inventarioProduto.getProduto());
                     estoqueProdutos.setDescricao(inventarioProduto.getDescricao());
                     estoqueProdutos.setReferencia(inventarioProduto.getReferencia());
                     estoqueProdutos.setUnidade(inventarioProduto.getUnidade());
                     estoqueProdutos.setEstoqueAtual(estoqueAtual);
-                    System.out.println("Quantidade " + inventarioProduto.getQuantidade() + " estoqueAtual " + produto.getEstoqueAtual());
-                    double quantidade = 0;
-                    if(inventarioProduto.getQuantidade() > estoqueAtual){
-                        System.out.println("ENTRANDO....");
+                    if(inventarioProduto.getQuantidade() >= estoqueAtual){
                         quantidade = inventarioProduto.getQuantidade() - estoqueAtual;
                         estoqueProdutos.setSaldo(quantidade + estoqueAtual); 
                         estoqueProdutos.setEstoque(estoqueEntrada);
-                        System.out.println("O que é " + getDao().findById(estoqueEntrada.getId(), Estoque.class));
-                        if(!entrada){
-                        
-                            try {
-                                System.out.println("CRIANDO ENTRADA....");
-                                getDao().save(estoqueEntrada);
-                                entrada = true;
-                            } 
-                            catch (Exception e) {
-
-                                new Log().salvaErroLog(e);
-                                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
-                            }
-                        }
-                    }    
-                    else if(inventarioProduto.getQuantidade() < estoqueAtual){
-                        System.out.println("SAINDO....");
+                    }        
+                    else {
                         quantidade = inventarioProduto.getQuantidade() + estoqueAtual;
                         estoqueProdutos.setSaldo(quantidade - estoqueAtual);
-                        estoqueProdutos.setEstoque(estoqueSaida);
-                        System.out.println("O que é " + getDao().findById(estoqueSaida.getId(), Estoque.class));
-                        if(!saida){
-                        
-                            try {
-                                System.out.println("CRIANDO SAIDA....");
-                                getDao().save(estoqueSaida);
-                                saida = true;
-                            } 
-                            catch (Exception e) {
-
-                                new Log().salvaErroLog(e);
-                                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
-                            }
-                        }
+                        estoqueProdutos.setEstoque(estoqueSaida);                       
                     }    
                     estoqueProdutos.setQuantidade((int) quantidade);    
                     estoqueProdutos.setValorUnitario(0);
-                    estoqueProdutos.setValorTotal(0);
-                    
+                    estoqueProdutos.setValorTotal(0);  
                     try {
                         getDao().save(estoqueProdutos);
                     } catch (Exception e) {
@@ -270,17 +279,43 @@ public class InventarioBean extends BaseBean implements Serializable{
             if (getInventario().getTipo().equals("Total")) {
 
                 for (Produto produtoTotal : getProdutos()) {
-                    if(!isZeraQuantidadeProduto(produtoTotal)){
-                    
+                    if(!isZeraQuantidadeProduto(produtoTotal) && produtoTotal.isControleEstoque()){
+                        EstoqueProdutos estoqueProdutos = new EstoqueProdutos();                 
                         produto = getDao().findById(produtoTotal.getId(), Produto.class);
-                        produto.setEstoqueAtual(0);
+                        estoqueAtual = produtoTotal.getEstoqueAtual();
+                        estoqueProdutos.setAtivo(true);
+                        estoqueProdutos.setProduto(produtoTotal);
+                        estoqueProdutos.setDescricao(produtoTotal.getDescricao());
+                        estoqueProdutos.setReferencia(produtoTotal.getReferencia());
+                        estoqueProdutos.setUnidade(produtoTotal.getUnidade());
+                        estoqueProdutos.setEstoqueAtual(estoqueAtual);
+                        if(estoqueAtual >= 0){
+                           quantidade = estoqueAtual;
+                           estoqueProdutos.setSaldo(estoqueAtual - quantidade); 
+                           estoqueProdutos.setEstoque(estoqueSaida);
+                        }
+                        else{
+                        
+                            quantidade = Math.abs(estoqueAtual);
+                            estoqueProdutos.setSaldo(estoqueAtual + quantidade);
+                            estoqueProdutos.setEstoque(estoqueEntrada);
+                        }
+                        estoqueProdutos.setQuantidade((int) quantidade);
+                        estoqueProdutos.setValorUnitario(0);
+                        estoqueProdutos.setValorTotal(0);
+                        try {
+                            getDao().save(estoqueProdutos);
+                        } catch (Exception e) {
+                            new Log().salvaErroLog(e);
+                            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
+                        }
+                        produto.setEstoqueAtual(estoqueProdutos.getSaldo());
                         try {
                             getDao().update(produto);
                         } catch (Exception e) {
                             new Log().salvaErroLog(e);
                             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem: ", "Um erro ocorreu, entre em contato com o adminstrador"));
                         }
-                   
                     }    
                 }
             }

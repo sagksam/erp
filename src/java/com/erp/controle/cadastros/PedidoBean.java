@@ -16,10 +16,8 @@ import com.erp.modelo.cadastros.PedidoProdutos;
 import com.erp.modelo.cadastros.PedidoServicos;
 import com.erp.modelo.cadastros.Produto;
 import com.erp.modelo.cadastros.Servico;
-import com.erp.modelo.classes.comuns.Auditoria;
 import com.erp.modelo.classes.comuns.Lista;
 import com.erp.modelo.classes.comuns.Lista.PrazoPagamento;
-import com.erp.util.JPAUtil;
 import com.erp.util.Log;
 import com.erp.util.Prazos;
 import java.io.Serializable;
@@ -31,6 +29,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import org.hibernate.Hibernate;
 
 /**
  *
@@ -111,8 +110,9 @@ public class PedidoBean extends BaseBean implements Serializable {
     //Método que adiciona um produto ao Pedido
     public String addProduto() {
 
-        if (getPedido().getPedidosProdutos() == null) {
+        if (getPedido().getPedidosProdutos() == null || getPedidoProdutos() == null) {
             getPedido().setPedidosProdutos(new ArrayList<PedidoProdutos>());
+            setPedidoProdutos(new PedidoProdutos());
         }
         if (!isModoEdicao()) {
             getPedidoProdutos().setPedido(getPedido());
@@ -134,6 +134,7 @@ public class PedidoBean extends BaseBean implements Serializable {
         if (pedidoProduto.getId() > 0) {
             getPedido().getPedidosProdutos().remove(pedidoProduto);
             try {
+                System.out.println("ENTROU NO LOOP DO DELETE...");
                 new GenericDAO().delete(pedidoProduto);
             } 
             catch (Exception e) {
@@ -175,6 +176,7 @@ public class PedidoBean extends BaseBean implements Serializable {
         if (pedidoServico.getId() > 0) {
             getPedido().getPedidosServicos().remove(pedidoServico);
             try {
+                pedidoServico.setPedido(null);
                 new GenericDAO().delete(pedidoServico);
             } 
             catch (Exception e) {
@@ -341,7 +343,6 @@ public class PedidoBean extends BaseBean implements Serializable {
 
         if (geraConta && getPedido().isAtivo()) {
 
-            Auditoria auditoria = new Auditoria();
             int parcelas = getPedido().getParcelas();
             Date[] datas = new Prazos().prazosDatas(getPedido().getDataEmissao(), getPedido().getPrazoPagamento(), parcelas);
             for (int i = 1; i <= parcelas; i++) {
@@ -365,12 +366,8 @@ public class PedidoBean extends BaseBean implements Serializable {
                 conta.setDataVencimento(datas[i - 1]);
                 conta.setDataLimite(datas[i - 1]);
                 conta.setValorPrevisto(getPedido().getValorParcela());
-                conta.setDataPagamento(null);
-                auditoria.setCriacaoUsuario(new BaseBean().getUsuario());
-                auditoria.setCriacaoData(new Date());
-                auditoria.setAlteracaoData(new Date());
-                auditoria.setAlteracaoUsuario(new BaseBean().getUsuario());
-                conta.setAuditoria(auditoria);
+                conta.setDataPagamento(null);            
+                conta.setAuditoria(getAuditoria(conta));
                 try {
                     getDao().save(conta);
                 } catch (Exception e) {
@@ -425,7 +422,6 @@ public class PedidoBean extends BaseBean implements Serializable {
         /*GERANDO A MOVIMENTAÇÃO*/
         if(geraMovimentacao && getPedido().isAtivo()){
             
-            Auditoria auditoria = new Auditoria();
             Estoque estoque = new Estoque();
             estoque.setAtivo(true);
             if(getPedido().getTipo().equalsIgnoreCase("Compra")){
@@ -441,12 +437,8 @@ public class PedidoBean extends BaseBean implements Serializable {
             estoque.setResponsavel(getPedido().getAuditoria().getAlteracaoUsuario().getNome());
             estoque.setInventario(0);
             estoque.setPedido(getPedido().getId());
-            estoque.setNotaProduto(0);
-            auditoria.setCriacaoUsuario(new BaseBean().getUsuario());
-            auditoria.setCriacaoData(new Date());
-            auditoria.setAlteracaoData(new Date());
-            auditoria.setAlteracaoUsuario(new BaseBean().getUsuario());
-            estoque.setAuditoria(auditoria);
+            estoque.setNotaProduto(0);         
+            estoque.setAuditoria(getAuditoria(estoque));
             try {
                 getDao().save(estoque);
             } 

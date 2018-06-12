@@ -26,9 +26,9 @@ import org.hibernate.annotations.NamedQuery;
 @NamedQuery(name="orcamentos", query="SELECT o FROM Orcamento o WHERE o.ativo = :ativo")
 public class Orcamento extends VendaBase implements Serializable{
     
-    @OneToMany(mappedBy="orcamento", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="orcamento", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
     private List<OrcamentoProdutos> orcamentosProdutos;
-    @OneToMany(mappedBy="orcamento", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="orcamento", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
     private List<OrcamentoServicos> orcamentosServicos;
     
     public Orcamento(){

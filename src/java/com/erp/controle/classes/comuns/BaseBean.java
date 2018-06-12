@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.faces.application.FacesMessage;
@@ -76,7 +75,19 @@ public class BaseBean implements Serializable {
     }
 
     //Getters e Setters
-    public Auditoria getAuditoria() {
+    public Auditoria getAuditoria(EntidadeBase entidadeBase) {
+        Auditoria auditoria = new Auditoria();
+        if(entidadeBase.getAuditoria() == null){
+            auditoria.setCriacaoUsuario(getUsuario());
+            auditoria.setCriacaoData(new java.sql.Timestamp(new java.util.Date().getTime()));
+            auditoria.setAlteracaoUsuario(getUsuario());
+            auditoria.setAlteracaoData(new java.sql.Timestamp(new java.util.Date().getTime()));
+        }
+        else{
+            auditoria = getDao().findById(entidadeBase.getAuditoria().getId(), Auditoria.class);
+            auditoria.setAlteracaoUsuario(getUsuario());
+            auditoria.setAlteracaoData(new java.sql.Timestamp(new java.util.Date().getTime()));
+        }        
         return auditoria;
     }
 
@@ -117,7 +128,6 @@ public class BaseBean implements Serializable {
             pageSize.setW(BigInteger.valueOf(16840));
             pageSize.setH(BigInteger.valueOf(11900));
             FileOutputStream out = new FileOutputStream(new File("D:\\erp\\modelo\\temp\\documento.docx"));
-         // FileOutputStream out = new FileOutputStream(new File("/Users/bianca/Documents/documento.docx"));
             XWPFParagraph paragrafoCabecalho = document.createParagraph();
             paragrafoCabecalho.setBorderBottom(Borders.BASIC_BLACK_DASHES);
             paragrafoCabecalho.setBorderLeft(Borders.BASIC_BLACK_DASHES);
@@ -125,7 +135,7 @@ public class BaseBean implements Serializable {
             paragrafoCabecalho.setBorderTop(Borders.BASIC_BLACK_DASHES);
             XWPFRun fontCabecalhoBold = paragrafoCabecalho.createRun();
             fontCabecalhoBold.setBold(true);
-            String caminhoLogo = "D:\\erp\\modelo\\arquivos\\logo.png"; // "/Users/bianca/Documents/logo.png";
+            String caminhoLogo = "D:\\erp\\modelo\\arquivos\\logo.png";
             FileInputStream inputStream = new FileInputStream(caminhoLogo);
             fontCabecalhoBold.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, caminhoLogo, Units.toEMU(50), Units.toEMU(50));
             fontCabecalhoBold.addBreak();
@@ -256,13 +266,7 @@ public class BaseBean implements Serializable {
 
         if (entidadeBase.getId() == 0) {
             entidadeBase.setAtivo(true);
-            setAuditoria(new Auditoria());
-            getAuditoria().setCriacaoUsuario(getUsuario());
-            getAuditoria().setCriacaoData(new java.sql.Timestamp(new java.util.Date().getTime()));
-            getAuditoria().setAlteracaoUsuario(getUsuario());
-            getAuditoria().setAlteracaoData(new java.sql.Timestamp(new java.util.Date().getTime()));
-            entidadeBase.setAuditoria(getAuditoria());
-
+            entidadeBase.setAuditoria(getAuditoria(entidadeBase));
             try {
                 getDao().save(entidadeBase);
                 geraConta();
@@ -275,10 +279,7 @@ public class BaseBean implements Serializable {
 
         } 
         else {
-            setAuditoria((Auditoria) getDao().findById(entidadeBase.getAuditoria().getId(), Auditoria.class));
-            getAuditoria().setAlteracaoUsuario(getUsuario());
-            getAuditoria().setAlteracaoData(new java.sql.Timestamp(new java.util.Date().getTime()));
-            entidadeBase.setAuditoria(getAuditoria());
+            entidadeBase.setAuditoria(getAuditoria(entidadeBase));
             try {
                 getDao().update(entidadeBase);
                 geraConta();
@@ -299,15 +300,10 @@ public class BaseBean implements Serializable {
     public String exibirAuditoria(EntidadeBase entidadeBase) {
 
         if (entidadeBase.getId() > 0) {
-            setAuditoria((Auditoria) getDao().findById(entidadeBase.getAuditoria().getId(), Auditoria.class));
-            Usuario criacaoUsuario = getAuditoria().getCriacaoUsuario();
-            Usuario alteracaoUsuario = getAuditoria().getAlteracaoUsuario();
-            Date criacaoData = getAuditoria().getCriacaoData();
-            Date alteracaoData = getAuditoria().getAlteracaoData();
+            Auditoria auditoria = getDao().findById(entidadeBase.getAuditoria().getId(), Auditoria.class);           
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            return "Criado em " + dateFormat.format(criacaoData) + " por " + criacaoUsuario.getNome() + ", alterado em " + dateFormat.format(alteracaoData) + " por " + alteracaoUsuario.getNome();
+            return "Criado em " + dateFormat.format(auditoria.getCriacaoData()) + " por " + auditoria.getCriacaoUsuario().getNome() + ", alterado em " + dateFormat.format(auditoria.getAlteracaoData()) + " por " + auditoria.getAlteracaoUsuario().getNome();
         } else {
-
             return "Novo Registro";
         }
     }

@@ -59,7 +59,7 @@ public class NotaProduto extends VendaBase implements Serializable{
     private String especieTransportadora;
     private double pesoBrutoTransportadora;
     private double pesoLiquidoTransportadora;
-    @OneToMany(mappedBy="notaProduto", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="notaProduto", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
     private List<NotaProdutoProdutos> notaProdutoProdutos;
 
     public NotaProduto() {
